@@ -7,7 +7,7 @@ import {
   useUpdateIncidentStatus,
   useAddIncidentNote,
   useFlagUser,
-  useIsolateDevice,
+  useSafeContainDevice,
   useQuarantineEmail
 } from '../store/store';
 import { 
@@ -34,7 +34,7 @@ export default function Incidents() {
   const updateStatus = useUpdateIncidentStatus();
   const addNote = useAddIncidentNote();
   const flagUser = useFlagUser();
-  const isolateDevice = useIsolateDevice();
+  const safeContainDevice = useSafeContainDevice();
   const quarantineEmail = useQuarantineEmail();
   const isIncidentResponse = state.workspaceRole === 'incident_response';
 
@@ -110,7 +110,10 @@ export default function Incidents() {
         flagUser(activeIncident.affectedUserId, 'Synthetic incident containment playbook');
       }
       if (index === 5 && type === 'contained') {
-        if (deviceId) isolateDevice(deviceId);
+        if (deviceId) {
+          const deviceEvent = incidentEvents.find(e => e.deviceId === deviceId);
+          if (deviceEvent) safeContainDevice(deviceId, deviceEvent.id);
+        }
         if (emailId) quarantineEmail(emailId, 'Synthetic incident containment playbook');
       }
       if (index === 7) {
