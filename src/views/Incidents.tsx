@@ -564,7 +564,15 @@ export default function Incidents() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {canExecutePlaybooks && (<button
-                  onClick={() => {\n                    if (!derivedDeviceId) return;\n                    const deviceEvent = incidentEvents.find(e => e.deviceId === derivedDeviceId);\n                    if (!deviceEvent) return;\n                    handleAction(`Isolate Device ${derivedDeviceId}`, () => safeContainDevice(derivedDeviceId, deviceEvent.id));\n                  }}
+                  onClick={() => {
+                    if (!derivedDeviceId) return;
+                    const deviceEvent = incidentEvents.find(e => e.deviceId === derivedDeviceId);
+                    if (!deviceEvent) return;
+                    handleAction(
+                      `Isolate Device ${derivedDeviceId}`,
+                      () => safeContainDevice(derivedDeviceId, deviceEvent.id)
+                    );
+                  }}
                   className="btn btn-outline"
                   disabled={!derivedDeviceId}
                   style={{ justifyContent: 'flex-start', padding: '0.65rem 1rem', borderColor: 'rgba(239, 68, 68, 0.4)', color: 'var(--critical)', opacity: derivedDeviceId ? 1 : 0.5 }}
