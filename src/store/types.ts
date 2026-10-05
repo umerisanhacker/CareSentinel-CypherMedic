@@ -41,6 +41,16 @@ export interface SimulatedDevice {
   normalTrafficMbps?: number;
   currentTrafficMbps?: number;
   telemetry?: Record<string, string>;
+  assignedPhysician?: string;
+  assignedBiomedicalEngineer?: string;
+  bedOrLocation?: string;
+  safetyEnvelope?: {
+    patientMonitoringRequired: boolean;
+    directIsolationAllowed: boolean;
+    upstreamContainmentAllowed: boolean;
+    clinicalApprovalRequired: boolean;
+    biomedicalApprovalRequired: boolean;
+  };
 }
 
 export interface SimulatedEmail {
