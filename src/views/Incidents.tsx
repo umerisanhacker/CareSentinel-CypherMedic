@@ -21,7 +21,8 @@ import {
   MessageSquare,
   ChevronRight,
   ArrowRight,
-  Mail
+  Mail,
+  HeartPulse
 } from 'lucide-react';
 import { DecisionBadge, deriveDecisionStatus } from '../components/security/DecisionBadge';
 
@@ -51,6 +52,12 @@ export default function Incidents() {
 
   // Selected incident ID from state or local
   const activeIncident = incidents.find(i => i.id === state.selectedIncidentId) || null;
+  const activeClinicalEvent = activeIncident
+    ? events.find(e => activeIncident.eventIds.includes(e.id) && e.deviceId)
+    : undefined;
+  const activeClinicalDevice = activeClinicalEvent
+    ? state.devices.find(d => d.id === activeClinicalEvent.deviceId)
+    : undefined;
 
   const filteredIncidents = incidents.filter(i => {
     if (filterStatus === 'all') return true;
@@ -154,9 +161,29 @@ export default function Incidents() {
         ? { label: 'SUSPICIOUS ACTIVITY', confidence: 'MODERATE', tone: 'var(--warning)', bg: 'var(--warning-bg)', recommendation: hasUnusualLogin ? 'Investigate the login context, device identity and network origin before deciding on account containment.' : 'Continue evidence collection and correlate additional telemetry before taking irreversible response actions.' }
         : { label: 'INCONCLUSIVE', confidence: 'LOW', tone: 'var(--accent-primary)', bg: 'var(--accent-light)', recommendation: 'Gather more evidence and avoid declaring compromise until the telemetry supports a response decision.' };
 
-    return (
+    const clinicalSafetyPanel = activeClinicalEvent && activeClinicalDevice ? (
+    <div className="card" style={{ padding: '1.1rem 1.25rem', background: '#fffaf5', border: '1px solid #fed7aa', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '.7rem' }}>
+        <div style={{ width: 34, height: 34, borderRadius: 9, display: 'grid', placeItems: 'center', background: '#ffedd5', color: '#c2410c' }}><HeartPulse size={18} /></div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: '.68rem', fontWeight: 850, color: '#9a3412', textTransform: 'uppercase', letterSpacing: '.05em' }}>Clinical Safety Context</div>
+          <div style={{ fontSize: '.9rem', fontWeight: 850, marginTop: '.2rem' }}>{activeClinicalDevice.name} is part of this incident</div>
+          <div style={{ fontSize: '.74rem', color: '#7c2d12', lineHeight: 1.5, marginTop: '.3rem' }}>
+            Patient connected: <strong>{activeClinicalDevice.patientConnected ? 'Yes' : 'No'}</strong> · Physician: <strong>{activeClinicalDevice.assignedPhysician || 'Clinical team'}</strong> · Biomedical: <strong>{activeClinicalDevice.assignedBiomedicalEngineer || 'Biomedical Engineering'}</strong>
+          </div>
+          <div style={{ fontSize: '.74rem', color: '#7c2d12', marginTop: '.35rem' }}>
+            Recommended posture: preserve clinical operation and contain the malicious path upstream where the safety envelope allows it.
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
+  return (
       <div className="space-y-6 animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        {/* Top Back Navigation & Actions */}
+        {clinicalSafetyPanel}
+
+      {/* Top Back Navigation & Actions */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <button 
             onClick={() => selectIncident(null)}
