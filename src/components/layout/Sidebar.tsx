@@ -8,6 +8,7 @@ import {
   Users, 
   Network, 
   Activity, 
+  HeartPulse,
   Server,
   Play, 
   ScrollText, 
@@ -36,6 +37,7 @@ export function Sidebar() {
     { name: 'Network', icon: Network, badge: alertCounts.network },
     { name: 'Application Security', icon: Server, badge: alertCounts.applicationSecurity },
     { name: 'EHR Security', icon: Activity, badge: alertCounts.ehrSecurity },
+    { name: 'Devices', icon: HeartPulse, badge: 0 },
   ];
 
   const opItems = [
