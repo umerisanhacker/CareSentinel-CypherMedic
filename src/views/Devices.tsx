@@ -23,6 +23,7 @@ import {
   useEscalateClinicalDevice,
   useResolveSecurityEvent,
 } from '../store/store';
+import { assessMedicalDevice, getDeviceNetworkPath, getDeviceTimeline } from '../store/deviceSecurityEngine';
 
 function statusTone(status: string) {
   if (status === 'isolated') return { bg: '#fff1f2', fg: '#be123c', label: 'ISOLATED' };
@@ -67,6 +68,9 @@ export default function Devices() {
   }, [events]);
 
   const activeEvent = selectedDevice ? activeDeviceEvents.get(selectedDevice.id) : undefined;
+  const selectedAssessment = selectedDevice ? assessMedicalDevice(selectedDevice, events) : undefined;
+  const selectedTimeline = selectedDevice ? getDeviceTimeline(selectedDevice, events) : [];
+  const selectedNetworkPath = selectedDevice ? getDeviceNetworkPath(selectedDevice, activeEvent) : [];
 
   const deviceTypes = useMemo(
     () => Array.from(new Set(medicalDevices.map(d => d.type).filter(Boolean))).sort(),
@@ -429,6 +433,91 @@ export default function Devices() {
               }}>
                 {statusTone(selectedDevice.status).label}
               </span>
+            </div>
+
+            {selectedAssessment && (
+              <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
+                <div style={{ padding: '0.75rem', borderRadius: '10px', background: selectedAssessment.riskLabel === 'CRITICAL' || selectedAssessment.riskLabel === 'HIGH' ? '#fff7ed' : '#f0fdf4', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)', fontWeight: 800 }}>SECURITY RISK</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 850, marginTop: '0.2rem' }}>{selectedAssessment.riskScore}/100</div>
+                  <div style={{ fontSize: '0.66rem', fontWeight: 800, color: selectedAssessment.riskLabel === 'LOW' ? 'var(--positive)' : 'var(--critical)' }}>{selectedAssessment.riskLabel}</div>
+                </div>
+                <div style={{ padding: '0.75rem', borderRadius: '10px', background: selectedAssessment.clinicalImpactLabel === 'CRITICAL' || selectedAssessment.clinicalImpactLabel === 'HIGH' ? '#fef2f2' : '#f8fafc', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)', fontWeight: 800 }}>CLINICAL IMPACT</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 850, marginTop: '0.2rem' }}>{selectedAssessment.clinicalImpactScore}/100</div>
+                  <div style={{ fontSize: '0.66rem', fontWeight: 800, color: selectedAssessment.clinicalImpactLabel === 'LOW' ? 'var(--positive)' : 'var(--critical)' }}>{selectedAssessment.clinicalImpactLabel}</div>
+                </div>
+              </div>
+            )}
+
+            <div style={{ marginTop: '1rem', padding: '0.9rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-primary)' }}>DEVICE STATE</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.65rem', marginTop: '0.65rem' }}>
+                <div><div style={{ fontSize: '0.61rem', color: 'var(--text-muted)' }}>CLINICAL</div><div style={{ fontSize: '0.72rem', fontWeight: 800 }}>{selectedAssessment.healthStatus}</div></div>
+                <div><div style={{ fontSize: '0.61rem', color: 'var(--text-muted)' }}>CYBER</div><div style={{ fontSize: '0.72rem', fontWeight: 800 }}>{selectedAssessment.cyberStatus}</div></div>
+                <div><div style={{ fontSize: '0.61rem', color: 'var(--text-muted)' }}>LIFECYCLE</div><div style={{ fontSize: '0.72rem', fontWeight: 800 }}>{(selectedDevice.lifecycleStatus || 'active').toUpperCase()}</div></div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '1rem', padding: '0.9rem', borderRadius: '10px', background: 'white', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-primary)' }}>DETERMINISTIC DETECTION</div>
+              <div style={{ display: 'grid', gap: '0.45rem', marginTop: '0.65rem' }}>
+                {selectedAssessment.findings.filter(f => f.triggered).map(f => (
+                  <div key={f.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem', fontSize: '0.7rem' }}>
+                    <span style={{ fontWeight: 750, color: 'var(--text-secondary)' }}>{f.label}</span>
+                    <span style={{ fontWeight: 800, color: 'var(--critical)', whiteSpace: 'nowrap' }}>+{f.points}</span>
+                  </div>
+                ))}
+                {selectedAssessment.findings.every(f => !f.triggered) && (
+                  <div style={{ fontSize: '0.7rem', color: 'var(--positive)', fontWeight: 700 }}>No deterministic anomaly rules triggered.</div>
+                )}
+              </div>
+            </div>
+
+            <div style={{ marginTop: '1rem', padding: '0.9rem', borderRadius: '10px', background: 'white', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-primary)' }}>NETWORK PATH</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap', marginTop: '0.65rem' }}>
+                {selectedNetworkPath.map((node, index) => (
+                  <span key={node + index} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <span style={{ padding: '0.3rem 0.45rem', borderRadius: '7px', background: index === selectedNetworkPath.length - 1 ? '#fff7ed' : '#f8fafc', border: '1px solid var(--border)', fontSize: '0.66rem', fontWeight: 750 }}>{node}</span>
+                    {index < selectedNetworkPath.length - 1 && <ChevronRight size={12} color="var(--text-muted)" />}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginTop: '1rem', padding: '0.9rem', borderRadius: '10px', background: 'white', border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', alignItems: 'center' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 800 }}>DEVICE LIFECYCLE</div>
+                <span style={{ fontSize: '0.63rem', fontWeight: 800, color: 'var(--positive)' }}>{selectedDevice.lifecycleStatus?.toUpperCase() || 'ACTIVE'}</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.55rem', marginTop: '0.65rem', fontSize: '0.68rem' }}>
+                <div><span style={{ color: 'var(--text-muted)' }}>Firmware</span><div style={{ fontWeight: 750 }}>{selectedDevice.firmwareVersion || 'Synthetic'}</div></div>
+                <div><span style={{ color: 'var(--text-muted)' }}>Last maintenance</span><div style={{ fontWeight: 750 }}>{selectedDevice.lastMaintenance || '—'}</div></div>
+                <div><span style={{ color: 'var(--text-muted)' }}>Maintenance window</span><div style={{ fontWeight: 750 }}>{selectedDevice.maintenanceWindow || '—'}</div></div>
+                <div><span style={{ color: 'var(--text-muted)' }}>Biomedical owner</span><div style={{ fontWeight: 750 }}>{selectedDevice.assignedBiomedicalEngineer || '—'}</div></div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '1rem', padding: '0.9rem', borderRadius: '10px', background: 'white', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 800 }}>DEVICE TIMELINE</div>
+              <div style={{ marginTop: '0.65rem', display: 'grid', gap: '0.55rem' }}>
+                {selectedTimeline.length === 0 ? (
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>No security events recorded for this device.</div>
+                ) : selectedTimeline.slice(0, 6).map(item => (
+                  <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '62px 1fr', gap: '0.55rem', fontSize: '0.67rem' }}>
+                    <span style={{ color: 'var(--text-muted)', fontWeight: 700 }}>{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <div><div style={{ fontWeight: 800 }}>{item.title}</div><div style={{ color: 'var(--text-muted)', marginTop: '0.1rem' }}>{item.source} · {item.status}</div></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginTop: '1rem', padding: '0.9rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 800 }}>CORRELATED SECURITY SIGNALS</div>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginTop: '0.35rem', lineHeight: 1.45 }}>
+                {selectedTimeline.length} event(s) are linked directly to this device. Active signals are correlated into the existing Incident Core; no second incident store is created.
+              </div>
             </div>
 
             <div style={{ marginTop: '1.15rem', display: 'grid', gap: '0.65rem' }}>
