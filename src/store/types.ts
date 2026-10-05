@@ -31,6 +31,16 @@ export interface SimulatedDevice {
   known: boolean;
   status: 'online' | 'isolated' | 'flagged';
   location: string;
+  /** Optional synthetic biomedical/clinical-device metadata used by the device security console. */
+  deviceClass?: 'clinical' | 'infrastructure' | 'endpoint';
+  manufacturer?: string;
+  model?: string;
+  networkZone?: string;
+  clinicalCriticality?: 'low' | 'medium' | 'high' | 'critical';
+  patientConnected?: boolean;
+  normalTrafficMbps?: number;
+  currentTrafficMbps?: number;
+  telemetry?: Record<string, string>;
 }
 
 export interface SimulatedEmail {

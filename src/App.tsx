@@ -19,6 +19,7 @@ import LinkGuard from './views/LinkGuard';
 import AttachmentSecurity from './views/AttachmentSecurity';
 import Identity from './views/Identity';
 import NetworkView from './views/NetworkView';
+import Devices from './views/Devices';
 import ApplicationSecurity from './views/ApplicationSecurity';
 import EHRSecurity from './views/EHRSecurity';
 import AttackSimulator from './views/AttackSimulator';
@@ -68,6 +69,7 @@ function AppContent() {
       case 'Attachments': return <AttachmentSecurity />;
       case 'Identity': return <Identity />;
       case 'Network': return <NetworkView />;
+      case 'Devices': return <Devices />;
       case 'Application Security': return <ApplicationSecurity />;
       case 'EHR Security': return <EHRSecurity />;
       case 'Attack Simulator': return <AttackSimulator />;

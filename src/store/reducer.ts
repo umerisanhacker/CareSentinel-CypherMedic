@@ -303,6 +303,50 @@ export function rootReducer(state: AppState, action: Action): AppState {
           break;
         }
 
+        case 'Medical Device Traffic':
+        case 'SIMULATE MEDICAL DEVICE TRAFFIC': {
+          const targetDevice = state.devices.find(d => d.id === 'dev-006');
+          event = {
+            id: eventId,
+            timestamp,
+            eventType: 'SUSPICIOUS_OUTBOUND',
+            category: 'network',
+            severity: 'high',
+            title: 'ICU Medical Device Network Anomaly Detected',
+            description: 'Synthetic traffic anomaly detected on ICU Patient Monitor 021. Connection volume and outbound destinations are above the device baseline.',
+            source: 'Medical Device NIDS',
+            actor: 'Synthetic Threat Simulator',
+            deviceId: 'dev-006',
+            system: 'ICU Medical Device Network',
+            status: 'new',
+            riskContribution: 20,
+            metadata: {
+              deviceName: targetDevice?.name || 'ICU Patient Monitor 021',
+              deviceIp: targetDevice?.ip || '10.20.10.21',
+              networkZone: targetDevice?.networkZone || 'ICU-VLAN',
+              normalTrafficMbps: targetDevice?.normalTrafficMbps || 1.2,
+              observedTrafficMbps: 8.9,
+              connectionCount: 27,
+              normalConnectionCount: 4,
+              unknownDestinations: 3,
+              clinicalCriticality: targetDevice?.clinicalCriticality || 'critical',
+              patientConnected: targetDevice?.patientConnected ?? true,
+              decision: 'REVIEW_REQUIRED',
+            },
+          };
+          auditAction = 'Synthetic abnormal network traffic injected against ICU Patient Monitor 021';
+          notifTitle = 'Medical Device Network Anomaly Detected';
+          targetView = 'Devices';
+          notifSeverity = 'high';
+
+          updatedDevices = updatedDevices.map(d =>
+            d.id === 'dev-006'
+              ? { ...d, status: 'flagged' as const, currentTrafficMbps: 8.9 }
+              : d
+          );
+          break;
+        }
+
         case 'Port Scan':
         case 'SIMULATE PORT SCAN': {
           event = {
