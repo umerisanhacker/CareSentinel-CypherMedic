@@ -27,6 +27,9 @@ export function Sidebar() {
   const setCurrentView = useSetCurrentView();
   const { state } = useStore();
   const alertCounts = selectNavigationAlertCounts(state);
+  const deviceAlerts = state.events.filter(event =>
+    Boolean(event.deviceId) && (event.status === 'new' || event.status === 'acknowledged')
+  ).length;
 
   const securityItems = [
     { name: 'Incidents', icon: AlertTriangle, badge: alertCounts.incidents },
@@ -37,7 +40,7 @@ export function Sidebar() {
     { name: 'Network', icon: Network, badge: alertCounts.network },
     { name: 'Application Security', icon: Server, badge: alertCounts.applicationSecurity },
     { name: 'EHR Security', icon: Activity, badge: alertCounts.ehrSecurity },
-    { name: 'Devices', icon: HeartPulse, badge: 0 },
+    { name: 'Devices', icon: HeartPulse, badge: deviceAlerts },
   ];
 
   const opItems = [
