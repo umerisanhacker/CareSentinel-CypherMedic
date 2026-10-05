@@ -21,7 +21,8 @@ import {
   RotateCcw,
   AlertTriangle,
   X,
-  ShieldCheck
+  ShieldCheck,
+  HeartPulse
 } from 'lucide-react';
 
 export function AttackSimulator() {
@@ -105,6 +106,14 @@ export function AttackSimulator() {
       category: 'EHR Velocity Tripwire',
       icon: Database,
       desc: '47 patient records queried in 90 seconds (9.4x above baseline rate)',
+      color: 'var(--critical)',
+    },
+    {
+      name: 'SIMULATE MEDICAL DEVICE TRAFFIC',
+      type: 'SIMULATE MEDICAL DEVICE TRAFFIC',
+      category: 'Medical Device NIDS',
+      icon: HeartPulse,
+      desc: 'Synthetic abnormal network traffic against ICU Patient Monitor 021; creates a device anomaly for SOC review.',
       color: 'var(--critical)',
     },
   ];
