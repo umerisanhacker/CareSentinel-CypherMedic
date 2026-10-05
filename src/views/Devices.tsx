@@ -453,8 +453,8 @@ export default function Devices() {
             <div style={{ marginTop: '1rem', padding: '0.9rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid var(--border)' }}>
               <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-primary)' }}>DEVICE STATE</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.65rem', marginTop: '0.65rem' }}>
-                <div><div style={{ fontSize: '0.61rem', color: 'var(--text-muted)' }}>CLINICAL</div><div style={{ fontSize: '0.72rem', fontWeight: 800 }}>{selectedAssessment.healthStatus}</div></div>
-                <div><div style={{ fontSize: '0.61rem', color: 'var(--text-muted)' }}>CYBER</div><div style={{ fontSize: '0.72rem', fontWeight: 800 }}>{selectedAssessment.cyberStatus}</div></div>
+                <div><div style={{ fontSize: '0.61rem', color: 'var(--text-muted)' }}>CLINICAL</div><div style={{ fontSize: '0.72rem', fontWeight: 800 }}>{selectedAssessment?.healthStatus || 'UNKNOWN'}</div></div>
+                <div><div style={{ fontSize: '0.61rem', color: 'var(--text-muted)' }}>CYBER</div><div style={{ fontSize: '0.72rem', fontWeight: 800 }}>{selectedAssessment?.cyberStatus || 'UNKNOWN'}</div></div>
                 <div><div style={{ fontSize: '0.61rem', color: 'var(--text-muted)' }}>LIFECYCLE</div><div style={{ fontSize: '0.72rem', fontWeight: 800 }}>{(selectedDevice.lifecycleStatus || 'active').toUpperCase()}</div></div>
               </div>
             </div>
@@ -462,13 +462,13 @@ export default function Devices() {
             <div style={{ marginTop: '1rem', padding: '0.9rem', borderRadius: '10px', background: 'white', border: '1px solid var(--border)' }}>
               <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-primary)' }}>DETERMINISTIC DETECTION</div>
               <div style={{ display: 'grid', gap: '0.45rem', marginTop: '0.65rem' }}>
-                {selectedAssessment.findings.filter(f => f.triggered).map(f => (
+                {(selectedAssessment?.findings || []).filter(f => f.triggered).map(f => (
                   <div key={f.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem', fontSize: '0.7rem' }}>
                     <span style={{ fontWeight: 750, color: 'var(--text-secondary)' }}>{f.label}</span>
                     <span style={{ fontWeight: 800, color: 'var(--critical)', whiteSpace: 'nowrap' }}>+{f.points}</span>
                   </div>
                 ))}
-                {selectedAssessment.findings.every(f => !f.triggered) && (
+                {(selectedAssessment?.findings || []).every(f => !f.triggered) && (
                   <div style={{ fontSize: '0.7rem', color: 'var(--positive)', fontWeight: 700 }}>No deterministic anomaly rules triggered.</div>
                 )}
               </div>
