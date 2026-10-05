@@ -14,7 +14,8 @@ import {
   Network, 
   Users, 
   Server, 
-  Activity, 
+  Activity,
+  HeartPulse, 
   Database, 
   RefreshCw,
   Terminal,
@@ -332,6 +333,20 @@ export function AttackSimulator() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: '1.35rem', background: '#f8fbff', border: '1px solid #bfdbfe' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.8rem' }}>
+          <div style={{ width: 38, height: 38, borderRadius: 10, display: 'grid', placeItems: 'center', background: '#dbeafe', color: 'var(--accent-primary)', flexShrink: 0 }}><HeartPulse size={20} /></div>
+          <div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 850, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--accent-primary)' }}>Clinical-aware response simulation</div>
+            <h2 style={{ fontSize: '1.05rem', fontWeight: 850, marginTop: '0.25rem' }}>The safest cyber response is not always device isolation.</h2>
+            <p style={{ fontSize: '0.78rem', lineHeight: 1.55, color: 'var(--text-secondary)', marginTop: '0.35rem' }}>Medical-device scenarios model patient connection, clinical criticality, assigned responders, and response risk. A patient-connected device can remain operational while the SOC contains the malicious network path and escalates clinical/biomedical review.</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginTop: '0.7rem' }}>
+              {['Detect','Assess clinical impact','Notify care team','Contain upstream','Verify recovery'].map((step, i) => <span key={step} style={{ padding: '0.35rem 0.55rem', borderRadius: 999, background: 'white', border: '1px solid #dbeafe', fontSize: '0.67rem', fontWeight: 750, color: 'var(--text-secondary)' }}>{i + 1}. {step}</span>)}
+            </div>
           </div>
         </div>
       </div>
