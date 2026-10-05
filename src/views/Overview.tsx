@@ -5,7 +5,9 @@ import {
   Users, 
   Activity, 
   Network, 
-  ArrowRight
+  ArrowRight,
+  HeartPulse,
+  Stethoscope
 } from 'lucide-react';
 import { useEvents, useIncidents, usePosture, useSetCurrentView } from '../store/store';
 import { selectRecentEvents } from '../store/selectors';
@@ -113,6 +115,40 @@ export default function Overview() {
           </button>
         </div>
       )}
+
+      <div className="card" style={{ padding: '1.35rem', background: 'white' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', color: 'var(--accent-primary)', fontSize: '.7rem', fontWeight: 850, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+              <ShieldCheck size={15} /> Decision Intelligence
+            </div>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 850, marginTop: '.25rem' }}>Security response is evaluated against clinical impact</h2>
+            <p style={{ fontSize: '.78rem', color: 'var(--text-secondary)', marginTop: '.3rem', maxWidth: 760, lineHeight: 1.5 }}>
+              CareSentinel separates the question “Is this malicious?” from the question “What is the safest response?” so a high cyber-risk signal does not automatically become a high patient-safety action.
+            </p>
+          </div>
+          <button onClick={() => setCurrentView('Devices')} className="btn btn-outline" style={{ fontSize: '.75rem' }}>
+            <HeartPulse size={14} /> Clinical Assets <ArrowRight size={14} />
+          </button>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '.7rem', marginTop: '1rem' }}>
+          {[
+            ['Cyber signals', activeTelemetry.length, 'var(--critical)'],
+            ['Identity', identityCount, 'var(--accent-primary)'],
+            ['Network', networkEventsCount, 'var(--warning)'],
+            ['EHR', ehrAnomaliesCount, 'var(--accent-secondary)'],
+          ].map(([label, value, tone]) => (
+            <div key={String(label)} style={{ padding: '.8rem', borderRadius: 9, background: 'var(--bg-main)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '.66rem', color: 'var(--text-muted)', fontWeight: 750, textTransform: 'uppercase' }}>{label}</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 850, color: String(tone), marginTop: '.15rem' }}>{String(value)}</div>
+            </div>
+          ))}
+          <div style={{ padding: '.8rem', borderRadius: 9, background: '#f8fbff', border: '1px solid #dbeafe' }}>
+            <div style={{ fontSize: '.66rem', color: 'var(--text-muted)', fontWeight: 750, textTransform: 'uppercase' }}>Response principle</div>
+            <div style={{ fontSize: '.78rem', fontWeight: 800, color: 'var(--accent-primary)', marginTop: '.25rem' }}>Preserve care · contain threat</div>
+          </div>
+        </div>
+      </div>
 
       {/* 6 Metric Cards */}
       <div className="grid-metrics">
