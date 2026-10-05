@@ -1689,3 +1689,160 @@ input, textarea, select {
     flex: 0 0 auto !important;
   }
 }
+
+
+/* FINAL HEADER GEOMETRY — groups own their space; nothing may overlap. */
+.top-nav {
+  display: grid !important;
+  grid-template-columns: minmax(280px, 320px) max-content minmax(0, 1fr) !important;
+  align-items: center !important;
+  column-gap: 12px !important;
+  justify-content: initial !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.topnav-search-zone {
+  width: auto !important;
+  min-width: 280px !important;
+  max-width: 320px !important;
+  flex: none !important;
+}
+
+.topnav-search {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.topnav-command-zone {
+  width: max-content !important;
+  min-width: max-content !important;
+  max-width: none !important;
+  flex: none !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  overflow: visible !important;
+}
+
+.topnav-command-zone > .topnav-environment,
+.topnav-command-zone > .topnav-actions {
+  flex: 0 0 auto !important;
+}
+
+.topnav-actions {
+  width: max-content !important;
+  min-width: max-content !important;
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+
+.topnav-environment {
+  width: max-content !important;
+  min-width: max-content !important;
+  flex: 0 0 auto !important;
+}
+
+.topnav-utility-zone {
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  justify-self: end !important;
+  justify-content: flex-end !important;
+  flex: none !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+.topnav-utility-zone > * {
+  flex: 0 0 auto !important;
+}
+
+/* Do not allow the guided-demo button to cover the system-status area. */
+.topnav-demo-btn,
+.topnav-reset-btn {
+  flex: 0 0 auto !important;
+}
+
+/* At smaller desktop widths, intentionally collapse secondary labels rather
+   than allowing the command groups to overlap. */
+@media (max-width: 1450px) {
+  .top-nav {
+    grid-template-columns: 270px max-content minmax(0, 1fr) !important;
+    column-gap: 8px !important;
+  }
+
+  .topnav-search-zone {
+    min-width: 270px !important;
+    max-width: 270px !important;
+  }
+
+  .topnav-environment-context {
+    display: none !important;
+  }
+
+  .topnav-environment-divider {
+    display: none !important;
+  }
+
+  .topnav-system-status > span:last-child {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1150px) {
+  .top-nav {
+    grid-template-columns: 230px max-content minmax(0, 1fr) !important;
+  }
+
+  .topnav-search-zone {
+    min-width: 230px !important;
+    max-width: 230px !important;
+  }
+
+  .topnav-reset-btn span,
+  .topnav-demo-btn span,
+  .topnav-public-btn span,
+  .topnav-user-copy {
+    display: none !important;
+  }
+
+  .topnav-reset-btn {
+    width: 36px !important;
+    padding: .4rem !important;
+  }
+
+  .topnav-demo-btn {
+    width: 40px !important;
+    padding: .4rem !important;
+  }
+
+  .topnav-public-btn {
+    width: 40px !important;
+    padding: .42rem !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .top-nav {
+    display: flex !important;
+    width: max-content !important;
+    min-width: 100% !important;
+    overflow-x: auto !important;
+    justify-content: flex-start !important;
+  }
+
+  .topnav-search-zone {
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+  }
+
+  .topnav-command-zone,
+  .topnav-utility-zone {
+    flex: 0 0 auto !important;
+  }
+}
