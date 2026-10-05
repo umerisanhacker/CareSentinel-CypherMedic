@@ -93,13 +93,21 @@ function createIncidentFromEvent(state: AppState, eventId: string): AppState {
   const now = new Date().toISOString();
   const riskScore = calculateIncidentRisk([event.id], state.events);
   const incidentId = `INC-SIG-${Date.now().toString().slice(-8)}`;
+  const isDeviceIncident = Boolean(event.deviceId);
+  const incidentDevice = event.deviceId ? state.devices.find(device => device.id === event.deviceId) : undefined;
   const incident = {
     id: incidentId,
-    title: `Identity Signal Investigation — ${event.actor || event.userId || 'Affected Account'}`,
+    title: isDeviceIncident
+      ? `Medical Device Security Investigation — ${incidentDevice?.name || event.deviceId}`
+      : `Identity Signal Investigation — ${event.actor || event.userId || 'Affected Account'}`,
     severity: event.severity,
     status: 'investigating' as const,
     affectedUserId: event.userId,
+    affectedDeviceIds: event.deviceId ? [event.deviceId] : undefined,
     affectedSystems: [event.system],
+    clinicalImpactScore: incidentDevice
+      ? (incidentDevice.clinicalCriticality === 'critical' ? 90 : incidentDevice.clinicalCriticality === 'high' ? 70 : 40)
+      : undefined,
     eventIds: [event.id],
     riskScore,
     riskFactors: [{
@@ -111,7 +119,9 @@ function createIncidentFromEvent(state: AppState, eventId: string): AppState {
     }],
     createdAt: now,
     updatedAt: now,
-    description: `Analyst-initiated SOC investigation opened from the ${event.eventType} signal. The signal remains linked to the original telemetry and audit trail.`,
+    description: isDeviceIncident
+      ? `Analyst-initiated medical-device investigation opened from the ${event.eventType} signal. Clinical impact and cybersecurity risk remain separately tracked.`
+      : `Analyst-initiated SOC investigation opened from the ${event.eventType} signal. The signal remains linked to the original telemetry and audit trail.`,
     assignedInvestigator: 'SOC Analyst L2 (Synthetic)',
     recommendedActions: [
       'Review authentication context and device identity',
