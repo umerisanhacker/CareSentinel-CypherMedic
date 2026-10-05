@@ -176,7 +176,9 @@ export interface CorrelatedIncident {
   severity: Severity;
   status: IncidentStatus;
   affectedUserId?: string;
+  affectedDeviceIds?: string[];
   affectedSystems: string[];
+  clinicalImpactScore?: number;
   eventIds: string[];
   riskScore: number; // 0-100
   riskFactors: RiskFactor[];
