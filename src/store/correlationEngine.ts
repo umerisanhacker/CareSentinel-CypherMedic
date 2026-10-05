@@ -1,4 +1,5 @@
 import type { SecurityEvent, CorrelatedIncident, RiskFactor, Severity } from './types';
+import { assessMedicalDevice } from './deviceSecurityEngine';
 
 export function calculateIncidentRisk(eventIds: string[], events: SecurityEvent[]): number {
   const incidentEvents = events.filter(e => eventIds.includes(e.id));
@@ -184,6 +185,84 @@ export function correlateEvents(events: SecurityEvent[], existingIncidents: Corr
         };
         updatedIncidents.unshift(newInc);
       }
+    }
+  });
+
+  // 2. Medical-device correlation: multiple signals against one clinical asset
+  const byDevice: Record<string, SecurityEvent[]> = {};
+  activeEvents.filter(event => event.deviceId).forEach(event => {
+    const deviceId = event.deviceId as string;
+    if (!byDevice[deviceId]) byDevice[deviceId] = [];
+    byDevice[deviceId].push(event);
+  });
+
+  Object.entries(byDevice).forEach(([deviceId, deviceEvents]) => {
+    const device = events.find(event => event.deviceId === deviceId);
+    const deviceState = device ? undefined : undefined;
+    const eventIds = deviceEvents.map(event => event.id);
+    const activeDevice = deviceId;
+    const latestEvent = deviceEvents[0];
+    const riskScore = calculateIncidentRisk(eventIds, events);
+    const existingIdx = updatedIncidents.findIndex(inc =>
+      inc.affectedDeviceIds?.includes(activeDevice) && inc.status !== 'resolved'
+    );
+
+    // Device telemetry is evaluated by the same deterministic engine used by Devices.
+    // The correlation layer only needs the resulting score; it does not create a second state model.
+    const syntheticDevice = (globalThis as { __careSentinelDevices?: Record<string, import('./types').SimulatedDevice> }).__careSentinelDevices?.[deviceId];
+    const clinicalImpactScore = syntheticDevice
+      ? assessMedicalDevice(syntheticDevice, events).clinicalImpactScore
+      : latestEvent.severity === 'critical' ? 90 : latestEvent.severity === 'high' ? 70 : 45;
+
+    const title = `Medical Device Security Investigation — ${latestEvent?.actor || deviceId}`;
+    const riskFactors: RiskFactor[] = deviceEvents.map(event => ({
+      id: `rf-${event.id}`,
+      label: `${event.title} (+${event.riskContribution || 15})`,
+      deduction: event.riskContribution || 15,
+      eventId: event.id,
+      category: event.category,
+    }));
+
+    if (existingIdx >= 0) {
+      updatedIncidents[existingIdx] = {
+        ...updatedIncidents[existingIdx],
+        eventIds: Array.from(new Set([...updatedIncidents[existingIdx].eventIds, ...eventIds])),
+        affectedDeviceIds: [activeDevice],
+        riskScore: Math.max(updatedIncidents[existingIdx].riskScore, riskScore),
+        severity: determineSeverity(riskScore),
+        clinicalImpactScore,
+        updatedAt: new Date().toISOString(),
+        riskFactors,
+      };
+    } else {
+      updatedIncidents.unshift({
+        id: `INC-DEV-${Date.now().toString().slice(-6)}`,
+        title,
+        severity: determineSeverity(riskScore),
+        status: 'investigating',
+        affectedDeviceIds: [activeDevice],
+        affectedSystems: Array.from(new Set(deviceEvents.map(event => event.system))),
+        eventIds,
+        riskScore,
+        clinicalImpactScore,
+        riskFactors,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        description: `Deterministic device correlation linked ${deviceEvents.length} active security signal(s) to medical device ${deviceId}. Clinical impact is scored separately from cybersecurity risk.`,
+        assignedInvestigator: 'SOC Analyst L2 (Synthetic)',
+        recommendedActions: [
+          'Review device timeline and network path',
+          'Validate clinical operating state',
+          'Assess upstream containment before direct device isolation',
+          'Escalate to biomedical engineering when required',
+        ],
+        notes: [{
+          id: `note-device-${Date.now()}`,
+          author: 'CareSentinel Device Correlation Rule',
+          timestamp: new Date().toISOString(),
+          text: `Deterministic device correlation fired for ${deviceId}; ${deviceEvents.length} active signal(s) linked.`,
+        }],
+      });
     }
   });
 
