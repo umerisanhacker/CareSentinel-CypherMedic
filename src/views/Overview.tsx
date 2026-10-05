@@ -6,8 +6,7 @@ import {
   Activity, 
   Network, 
   ArrowRight,
-  HeartPulse,
-  Stethoscope
+  HeartPulse
 } from 'lucide-react';
 import { useEvents, useIncidents, usePosture, useSetCurrentView } from '../store/store';
 import { selectRecentEvents } from '../store/selectors';
