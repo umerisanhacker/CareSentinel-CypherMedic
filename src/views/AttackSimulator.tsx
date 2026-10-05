@@ -22,8 +22,7 @@ import {
   RotateCcw,
   AlertTriangle,
   X,
-  ShieldCheck,
-  HeartPulse
+  ShieldCheck
 } from 'lucide-react';
 
 export function AttackSimulator() {
