@@ -205,6 +205,20 @@ export function useFlagUser() {
   }, [dispatch]);
 }
 
+export function useSafeContainDevice() {
+  const { dispatch } = useStore();
+  return useCallback((deviceId: string, eventId: string) => {
+    dispatch({ type: 'SAFE_CONTAIN_DEVICE', payload: { deviceId, eventId } });
+  }, [dispatch]);
+}
+
+export function useEscalateClinicalDevice() {
+  const { dispatch } = useStore();
+  return useCallback((deviceId: string, eventId: string) => {
+    dispatch({ type: 'ESCALATE_CLINICAL_DEVICE', payload: { deviceId, eventId } });
+  }, [dispatch]);
+}
+
 export function useIsolateDevice() {
   const { dispatch } = useStore();
   return useCallback((deviceId: string) => {
