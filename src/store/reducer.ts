@@ -143,6 +143,37 @@ function createIncidentFromEvent(state: AppState, eventId: string): AppState {
   };
 }
 
+function createClinicalEscalationNotifications(device: AppState['devices'][number], eventId: string, timestamp: string): AppNotification[] {
+  return [
+    { id: 'not-clinical-' + Date.now(), title: 'Clinical Team Review Required', message: device.name + ' remains operational. Assigned physician ' + (device.assignedPhysician || 'clinical owner') + ' should verify patient/device behaviour.', timestamp, read: false, severity: 'high', relatedEventId: eventId, targetView: 'Devices' },
+    { id: 'not-biomed-' + (Date.now() + 1), title: 'Biomedical Engineering Review Required', message: device.name + ' requires biomedical inspection of connectivity and device integrity. Engineer: ' + (device.assignedBiomedicalEngineer || 'Biomedical Engineering') + '.', timestamp, read: false, severity: 'high', relatedEventId: eventId, targetView: 'Devices' },
+  ];
+}
+
+function safeContainClinicalDevice(state: AppState, deviceId: string, eventId: string): AppState {
+  const device = state.devices.find(d => d.id === deviceId);
+  const event = state.events.find(e => e.id === eventId);
+  if (!device || !event) return state;
+  const now = new Date().toISOString();
+  const updatedEvents = state.events.map(e => e.id === eventId ? { ...e, status: 'resolved' as const, responseStatus: 'contained' as const, metadata: { ...e.metadata, containmentMode: 'UPSTREAM_SAFE_CONTAINMENT', clinicalOperationPreserved: true, patientMonitoringInterrupted: false, clinicalApproval: 'SOC_APPROVED' } } : e);
+  const updatedDevices = state.devices.map(d => d.id === deviceId ? { ...d, status: 'online' as const, currentTrafficMbps: d.normalTrafficMbps ?? d.currentTrafficMbps } : d);
+  const audit: AuditEvent = { id: 'aud-safe-contain-' + Date.now(), timestamp: now, actor: 'SOC Analyst', system: 'Clinical Safety Response Engine', action: 'Safe containment approved — malicious network path restricted', outcome: 'success', relatedEventId: eventId, details: 'Contained suspicious network activity upstream of ' + device.name + '; clinical operation preserved. Patient-connected device was not directly isolated.' };
+  const notifications = createClinicalEscalationNotifications(device, eventId, now);
+  notifications[0].message += ' SOC containment is active; patient monitoring was not interrupted.';
+  notifications[1].message += ' SOC containment is active while the device remains clinically available.';
+  return { ...state, events: updatedEvents, devices: updatedDevices, notifications: [...notifications, ...state.notifications], auditLog: [audit, ...state.auditLog], securityPosture: calculatePosture(updatedEvents) };
+}
+
+function escalateClinicalDevice(state: AppState, deviceId: string, eventId: string): AppState {
+  const device = state.devices.find(d => d.id === deviceId);
+  const event = state.events.find(e => e.id === eventId);
+  if (!device || !event) return state;
+  const now = new Date().toISOString();
+  const notifications = createClinicalEscalationNotifications(device, eventId, now);
+  const updatedEvents = state.events.map(e => e.id === eventId ? { ...e, responseStatus: 'reviewed' as const, metadata: { ...e.metadata, clinicalEscalation: 'ACTIVE', clinicalTeamNotified: true, biomedicalTeamNotified: true } } : e);
+  const audit: AuditEvent = { id: 'aud-clinical-escalate-' + Date.now(), timestamp: now, actor: 'SOC Analyst', system: 'Clinical Safety Response Engine', action: 'Clinical + biomedical escalation initiated', outcome: 'success', relatedEventId: eventId, details: 'Assigned physician: ' + (device.assignedPhysician || 'Unassigned') + '; biomedical engineer: ' + (device.assignedBiomedicalEngineer || 'Unassigned') + '.' };
+  return { ...state, events: updatedEvents, notifications: [...notifications, ...state.notifications], auditLog: [audit, ...state.auditLog] };
+}
 export function rootReducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'TRIGGER_SIMULATION': {
@@ -926,6 +957,14 @@ export function rootReducer(state: AppState, action: Action): AppState {
         ...state,
         users: state.users.map(u => u.id === userId ? { ...u, status: 'active' as const } : u),
       };
+    }
+
+    case 'SAFE_CONTAIN_DEVICE': {
+      return safeContainClinicalDevice(state, action.payload.deviceId, action.payload.eventId);
+    }
+
+    case 'ESCALATE_CLINICAL_DEVICE': {
+      return escalateClinicalDevice(state, action.payload.deviceId, action.payload.eventId);
     }
 
     case 'ISOLATE_DEVICE': {
