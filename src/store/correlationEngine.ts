@@ -1,4 +1,4 @@
-import type { SecurityEvent, CorrelatedIncident, RiskFactor, Severity } from './types';
+import type { SecurityEvent, CorrelatedIncident, RiskFactor, Severity, SimulatedDevice } from './types';
 import { assessMedicalDevice } from './deviceSecurityEngine';
 
 export function calculateIncidentRisk(eventIds: string[], events: SecurityEvent[]): number {
@@ -71,7 +71,7 @@ function determineSeverity(score: number): Severity {
   return 'low';
 }
 
-export function correlateEvents(events: SecurityEvent[], existingIncidents: CorrelatedIncident[]): CorrelatedIncident[] {
+export function correlateEvents(events: SecurityEvent[], existingIncidents: CorrelatedIncident[], devices: SimulatedDevice[] = []): CorrelatedIncident[] {
   const activeEvents = events.filter(e => e.status === 'new' || e.status === 'acknowledged');
   if (activeEvents.length === 0) return [];
 
@@ -197,8 +197,7 @@ export function correlateEvents(events: SecurityEvent[], existingIncidents: Corr
   });
 
   Object.entries(byDevice).forEach(([deviceId, deviceEvents]) => {
-    const device = events.find(event => event.deviceId === deviceId);
-    const deviceState = device ? undefined : undefined;
+    const device = devices.find(item => item.id === deviceId);
     const eventIds = deviceEvents.map(event => event.id);
     const activeDevice = deviceId;
     const latestEvent = deviceEvents[0];
@@ -209,9 +208,8 @@ export function correlateEvents(events: SecurityEvent[], existingIncidents: Corr
 
     // Device telemetry is evaluated by the same deterministic engine used by Devices.
     // The correlation layer only needs the resulting score; it does not create a second state model.
-    const syntheticDevice = (globalThis as { __careSentinelDevices?: Record<string, import('./types').SimulatedDevice> }).__careSentinelDevices?.[deviceId];
-    const clinicalImpactScore = syntheticDevice
-      ? assessMedicalDevice(syntheticDevice, events).clinicalImpactScore
+    const clinicalImpactScore = device
+      ? assessMedicalDevice(device, events).clinicalImpactScore
       : latestEvent.severity === 'critical' ? 90 : latestEvent.severity === 'high' ? 70 : 45;
 
     const title = `Medical Device Security Investigation — ${latestEvent?.actor || deviceId}`;
