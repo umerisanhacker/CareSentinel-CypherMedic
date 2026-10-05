@@ -17,7 +17,8 @@ import {
 import {
   useDevices,
   useEvents,
-  useIsolateDevice,
+  useSafeContainDevice,
+  useEscalateClinicalDevice,
   useResolveSecurityEvent,
 } from '../store/store';
 
@@ -37,7 +38,8 @@ function severityTone(severity?: string) {
 export default function Devices() {
   const devices = useDevices();
   const events = useEvents();
-  const isolateDevice = useIsolateDevice();
+  const safeContainDevice = useSafeContainDevice();
+  const escalateClinicalDevice = useEscalateClinicalDevice();
   const resolveSecurityEvent = useResolveSecurityEvent();
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -62,7 +64,12 @@ export default function Devices() {
 
   const handleContain = () => {
     if (!selectedDevice || !activeEvent) return;
-    isolateDevice(selectedDevice.id);
+    safeContainDevice(selectedDevice.id, activeEvent.id);
+  };
+
+  const handleEscalate = () => {
+    if (!selectedDevice || !activeEvent) return;
+    escalateClinicalDevice(selectedDevice.id, activeEvent.id);
   };
 
   const handleAllow = () => {
@@ -266,11 +273,14 @@ export default function Devices() {
                   <div><span style={{ fontSize: '0.65rem', color: '#991b1b' }}>CLINICAL IMPACT</span><div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{selectedDevice.clinicalCriticality === 'critical' ? 'HIGH' : 'MEDIUM'}</div></div>
                 </div>
                 <p style={{ marginTop: '0.8rem', fontSize: '0.73rem', color: '#7f1d1d', lineHeight: 1.5 }}>
-                  This is a synthetic security event. Because the device is clinically connected, containment is presented to the SOC analyst for explicit approval.
+                  This is a synthetic security event. The device stays operational. CareSentinel recommends containing the malicious network path upstream rather than directly isolating a patient-connected device.
                 </p>
-                <div style={{ display: 'flex', gap: '0.6rem', marginTop: '0.9rem' }}>
-                  <button onClick={handleContain} className="btn btn-primary" style={{ flex: 1, background: 'var(--critical)', borderColor: 'var(--critical)', fontSize: '0.75rem' }}>
-                    <ShieldCheck size={15} /> Approve Containment
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', marginTop: '0.9rem' }}>
+                  <button onClick={handleContain} className="btn btn-primary" style={{ flex: 1, minWidth: '180px', background: 'var(--accent-primary)', borderColor: 'var(--accent-primary)', fontSize: '0.75rem' }}>
+                    <ShieldCheck size={15} /> Approve Safe Containment
+                  </button>
+                  <button onClick={handleEscalate} className="btn btn-secondary" style={{ flex: 1, minWidth: '180px', fontSize: '0.75rem' }}>
+                    <Stethoscope size={15} /> Escalate Clinical Team
                   </button>
                   <button onClick={handleAllow} className="btn btn-outline" style={{ flex: 1, fontSize: '0.75rem' }}>
                     <XCircle size={15} /> Dismiss
@@ -280,6 +290,11 @@ export default function Devices() {
             )}
 
             <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', fontSize: '0.72rem' }}>
+              <div style={{ gridColumn: '1 / -1', padding: '0.7rem', background: '#f8fafc', borderRadius: '9px', border: '1px solid var(--border)' }}>
+                <div style={{ color: 'var(--text-muted)' }}>Response owners</div>
+                <div style={{ fontWeight: 700, marginTop: '0.2rem' }}>{selectedDevice.assignedPhysician || 'Clinical team'} · {selectedDevice.assignedBiomedicalEngineer || 'Biomedical Engineering'}</div>
+                <div style={{ color: 'var(--text-muted)', marginTop: '0.15rem' }}>{selectedDevice.bedOrLocation || selectedDevice.location}</div>
+              </div>
               <div style={{ padding: '0.7rem', background: 'var(--bg-main)', borderRadius: '9px' }}>
                 <div style={{ color: 'var(--text-muted)' }}>Manufacturer</div>
                 <div style={{ fontWeight: 700, marginTop: '0.2rem' }}>{selectedDevice.manufacturer || 'Synthetic'}</div>
