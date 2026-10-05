@@ -86,6 +86,10 @@ export const initialDevices: SimulatedDevice[] = [
     normalTrafficMbps: 1.2,
     currentTrafficMbps: 1.2,
     telemetry: { 'Heart Rate': '78 bpm', 'SpO₂': '98%', 'Respiratory Rate': '16/min', 'ECG': 'Normal sinus rhythm' },
+    assignedPhysician: 'Dr. Sarah Wilson',
+    assignedBiomedicalEngineer: 'Arun Joseph',
+    bedOrLocation: 'ICU Bay 02 · Bed ICU-07',
+    safetyEnvelope: { patientMonitoringRequired: true, directIsolationAllowed: false, upstreamContainmentAllowed: true, clinicalApprovalRequired: true, biomedicalApprovalRequired: true },
   },
   {
     id: 'dev-007',
@@ -104,6 +108,10 @@ export const initialDevices: SimulatedDevice[] = [
     normalTrafficMbps: 0.9,
     currentTrafficMbps: 0.9,
     telemetry: { 'Heart Rate': '82 bpm', 'SpO₂': '97%', 'NIBP': '118/74 mmHg', 'ECG': 'Stable' },
+    assignedPhysician: 'Dr. Sarah Wilson',
+    assignedBiomedicalEngineer: 'Arun Joseph',
+    bedOrLocation: 'ICU Bay 04 · Bed ICU-09',
+    safetyEnvelope: { patientMonitoringRequired: true, directIsolationAllowed: false, upstreamContainmentAllowed: true, clinicalApprovalRequired: true, biomedicalApprovalRequired: true },
   },
   {
     id: 'dev-008',
@@ -122,6 +130,10 @@ export const initialDevices: SimulatedDevice[] = [
     normalTrafficMbps: 0.4,
     currentTrafficMbps: 0.4,
     telemetry: { 'Pump State': 'Running', 'Flow': '42 mL/h', 'Occlusion': 'None', 'Drug Library': 'Verified' },
+    assignedPhysician: 'Dr. Sarah Wilson',
+    assignedBiomedicalEngineer: 'Arun Joseph',
+    bedOrLocation: 'ICU Bay 06 · Bed ICU-11',
+    safetyEnvelope: { patientMonitoringRequired: true, directIsolationAllowed: false, upstreamContainmentAllowed: true, clinicalApprovalRequired: true, biomedicalApprovalRequired: true },
   },
   {
     id: 'dev-009',
@@ -140,6 +152,10 @@ export const initialDevices: SimulatedDevice[] = [
     normalTrafficMbps: 0.7,
     currentTrafficMbps: 0.7,
     telemetry: { 'Mode': 'AC/VC', 'FiO₂': '35%', 'PEEP': '5 cmH₂O', 'Device State': 'Stable' },
+    assignedPhysician: 'Dr. Emily Carter',
+    assignedBiomedicalEngineer: 'Arun Joseph',
+    bedOrLocation: 'ICU Bay 08 · Bed ICU-13',
+    safetyEnvelope: { patientMonitoringRequired: true, directIsolationAllowed: false, upstreamContainmentAllowed: true, clinicalApprovalRequired: true, biomedicalApprovalRequired: true },
   },
   {
     id: 'dev-010',
@@ -158,6 +174,10 @@ export const initialDevices: SimulatedDevice[] = [
     normalTrafficMbps: 0.6,
     currentTrafficMbps: 0.6,
     telemetry: { 'Treatment State': 'Standby', 'Pressure': 'Normal', 'Alarm': 'None', 'Connectivity': 'Healthy' },
+    assignedPhysician: 'Dr. James Anderson',
+    assignedBiomedicalEngineer: 'Arun Joseph',
+    bedOrLocation: 'Dialysis Unit · Station 04',
+    safetyEnvelope: { patientMonitoringRequired: false, directIsolationAllowed: true, upstreamContainmentAllowed: true, clinicalApprovalRequired: false, biomedicalApprovalRequired: true },
   },
   {
     id: 'dev-011',
@@ -176,6 +196,10 @@ export const initialDevices: SimulatedDevice[] = [
     normalTrafficMbps: 6.4,
     currentTrafficMbps: 6.4,
     telemetry: { 'PACS': 'Connected', 'DICOM': 'Healthy', 'Studies Queued': '3', 'Storage': '64% used' },
+    assignedPhysician: 'Dr. Marcus Chen',
+    assignedBiomedicalEngineer: 'Maya Thomas',
+    bedOrLocation: 'Radiology Reading Room · PACS-02',
+    safetyEnvelope: { patientMonitoringRequired: false, directIsolationAllowed: true, upstreamContainmentAllowed: true, clinicalApprovalRequired: false, biomedicalApprovalRequired: true },
   },
 ];
 
