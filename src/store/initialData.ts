@@ -1,0 +1,393 @@
+import type { 
+  SimulatedUser, 
+  SimulatedDevice, 
+  SimulatedEmail, 
+  SimulatedAttachment, 
+  SimulatedPatient, 
+  SimulatedEHRAccess, 
+  SecurityEvent, 
+  CorrelatedIncident, 
+  AuditEvent, 
+  AppNotification, 
+  SecurityPosture, 
+  NetworkTelemetryNode 
+} from './types';
+
+const today = new Date();
+export const formatTime = (h: number, m: number) => {
+  const d = new Date(today);
+  d.setHours(h, m, 0, 0);
+  return d.toISOString();
+};
+
+export const initialUsers: SimulatedUser[] = [
+  { 
+    id: 'dr.sarah', 
+    name: 'Dr. Sarah Wilson', 
+    role: 'Attending Physician', 
+    department: 'Cardiology', 
+    email: 'sarah.wilson@northstar-med.org',
+    normalHours: '07:00 - 17:00',
+    workstation: 'Hospital Workstation 04',
+    status: 'active'
+  },
+  { 
+    id: 'dr.chen', 
+    name: 'Dr. Marcus Chen', 
+    role: 'Chief of Radiology', 
+    department: 'Radiology', 
+    email: 'marcus.chen@northstar-med.org',
+    normalHours: '08:00 - 18:00',
+    workstation: 'Radiology PACS-02',
+    status: 'active'
+  },
+  { 
+    id: 'dr.emily', 
+    name: 'Dr. Emily Carter', 
+    role: 'Emergency Resident', 
+    department: 'Emergency Medicine', 
+    email: 'emily.carter@northstar-med.org',
+    normalHours: '19:00 - 07:00',
+    workstation: 'ER Station 01',
+    status: 'active'
+  },
+  { 
+    id: 'dr.anderson', 
+    name: 'Dr. James Anderson', 
+    role: 'Lead Oncologist', 
+    department: 'Oncology', 
+    email: 'james.anderson@northstar-med.org',
+    normalHours: '08:00 - 16:00',
+    workstation: 'Oncology-Terminal-03',
+    status: 'active'
+  },
+];
+
+export const initialDevices: SimulatedDevice[] = [
+  { id: 'dev-001', name: 'Hospital Workstation 04', type: 'Desktop Workstation', ip: '10.0.5.42', known: true, status: 'online', location: 'Cardiology 3rd Floor' },
+  { id: 'dev-002', name: 'Laptop-Marcus-01', type: 'Clinical Laptop', ip: '10.0.8.15', known: true, status: 'online', location: 'Radiology Reading Room' },
+  { id: 'dev-003', name: 'Unknown-Device-External', type: 'Rogue External Client', ip: '192.168.1.100', known: false, status: 'online', location: 'External VPN Gateway' },
+  { id: 'dev-004', name: 'iOS-Unknown-889', type: 'Mobile Device', ip: '172.16.0.50', known: false, status: 'online', location: 'Guest Wi-Fi Subnet' },
+  { id: 'dev-005', name: 'ER-CrashCart-Tablet', type: 'Medical Tablet', ip: '10.0.2.11', known: true, status: 'online', location: 'Emergency Bay 4' },
+];
+
+export const initialPatients: SimulatedPatient[] = [
+  { id: 'pat-1001', name: 'Eleanor Vance', mrn: 'MRN-49021', age: 64, gender: 'Female', department: 'Cardiology', primaryPhysician: 'Dr. Sarah Wilson', room: 'Room 304', condition: 'Stable Post-Catheterization', vip: false },
+  { id: 'pat-1002', name: 'David Kim', mrn: 'MRN-88192', age: 42, gender: 'Male', department: 'Emergency Medicine', primaryPhysician: 'Dr. Emily Carter', room: 'ER-02', condition: 'Acute Trauma Observation', vip: false },
+  { id: 'pat-1003', name: 'Robert Hayes', mrn: 'MRN-10423', age: 71, gender: 'Male', department: 'Oncology', primaryPhysician: 'Dr. James Anderson', room: 'Room 512', condition: 'Inpatient Chemotherapy', vip: true },
+  { id: 'pat-1042', name: 'Maria Santos', mrn: 'MRN-77312', age: 55, gender: 'Female', department: 'Cardiology', primaryPhysician: 'Dr. Sarah Wilson', room: 'Room 308', condition: 'Cardiac Rehabilitation', vip: false },
+  { id: 'pat-8819', name: 'Thomas Brody', mrn: 'MRN-33190', age: 38, gender: 'Male', department: 'Neurology', primaryPhysician: 'Dr. Marcus Chen', room: 'Room 410', condition: 'Neuro-Monitoring', vip: false },
+  { id: 'pat-2201', name: 'Lucas Gray', mrn: 'MRN-99120', age: 29, gender: 'Male', department: 'Emergency Medicine', primaryPhysician: 'Dr. Emily Carter', room: 'ER-Trauma-1', condition: 'Emergency Trauma Treatment', vip: false },
+];
+
+export const initialEmails: SimulatedEmail[] = [
+  {
+    id: 'em-base-01',
+    sender: 'laboratory@trusted-hospital.example',
+    senderName: 'Northstar Central Pathology',
+    domain: 'trusted-hospital.example',
+    recipient: 'marcus.chen@northstar-med.org',
+    recipientName: 'Dr. Marcus Chen',
+    subject: 'Stat Critical Lab Results - Batch #8819',
+    preview: 'Automated notification: Pathology results for inpatient cohort 8819 are now signed and verified...',
+    body: 'Dr. Chen,\n\nLaboratory panel #8819 has been finalized by pathology. Values have been populated directly into the EHR system. You may review the signed lab verification document attached or visit your internal radiology portal.\n\nCentral Pathology Services\nNorthstar Medical Center',
+    timestamp: formatTime(8, 15),
+    risk: 'low',
+    status: 'inbox',
+    authIndicators: {
+      syntaxValid: true,
+      domainTrusted: true,
+      displayNameMismatch: false,
+      lookalikeDetected: false,
+      syntheticSpf: 'PASS',
+      syntheticDkim: 'PASS',
+      syntheticDmarc: 'PASS',
+    },
+    links: ['https://ehr.northstar-med.internal/labs/8819'],
+    attachments: ['lab_report_signed.pdf'],
+  },
+  {
+    id: 'em-base-02',
+    sender: 'cardiology-admin@northstar-med.org',
+    senderName: 'Cardiology Department Chair',
+    domain: 'northstar-med.org',
+    recipient: 'sarah.wilson@northstar-med.org',
+    recipientName: 'Dr. Sarah Wilson',
+    subject: 'Cardiology Grand Rounds Schedule & Clinical Protocol',
+    preview: 'Please find attached the schedule for this Thursday Grand Rounds presentations on transcatheter aortic valves...',
+    body: 'Dr. Wilson,\n\nPlease see the upcoming Grand Rounds agenda and case discussion list. We will be reviewing post-catheterization clinical pathways for Room 304.\n\nBest regards,\nDepartment of Cardiology\nNorthstar Medical Center',
+    timestamp: formatTime(8, 30),
+    risk: 'low',
+    status: 'inbox',
+    authIndicators: {
+      syntaxValid: true,
+      domainTrusted: true,
+      displayNameMismatch: false,
+      lookalikeDetected: false,
+      syntheticSpf: 'PASS',
+      syntheticDkim: 'PASS',
+      syntheticDmarc: 'PASS',
+    },
+    links: ['https://intranet.northstar-med.internal/grand-rounds/cardio'],
+    attachments: ['grand_rounds_agenda.pdf'],
+  },
+  {
+    id: 'em-base-03',
+    sender: 'pharmacy@northstar-med.org',
+    senderName: 'Inpatient Clinical Pharmacy',
+    domain: 'northstar-med.org',
+    recipient: 'james.anderson@northstar-med.org',
+    recipientName: 'Dr. James Anderson',
+    subject: 'Clinical Pharmacy Formulary & Inpatient Medication Update',
+    preview: 'Monthly oncology chemotherapy formulary updates have been posted to the EHR medication administration record...',
+    body: 'Dr. Anderson,\n\nThe Pharmacy & Therapeutics Committee has updated the inpatient formulary for oncology regimens. All updates have been staged in the EHR e-Prescribing module.\n\nNorthstar Clinical Pharmacy Team',
+    timestamp: formatTime(8, 45),
+    risk: 'low',
+    status: 'inbox',
+    authIndicators: {
+      syntaxValid: true,
+      domainTrusted: true,
+      displayNameMismatch: false,
+      lookalikeDetected: false,
+      syntheticSpf: 'PASS',
+      syntheticDkim: 'PASS',
+      syntheticDmarc: 'PASS',
+    },
+    links: ['https://ehr.northstar-med.internal/pharmacy/formulary'],
+    attachments: [],
+  },
+  {
+    id: 'em-base-04',
+    sender: 'er-coordination@northstar-med.org',
+    senderName: 'ER Operations Desk',
+    domain: 'northstar-med.org',
+    recipient: 'emily.carter@northstar-med.org',
+    recipientName: 'Dr. Emily Carter',
+    subject: 'ER Trauma Shift Rotation & ICU Bed Census',
+    preview: 'Current trauma intake bay status and available ICU surgical stepdown beds for the evening shift...',
+    body: 'Dr. Carter,\n\nHere is the evening trauma triage roster and current ventilator availability in the surgical ICU.\n\nER Operational Operations\nNorthstar Medical Center',
+    timestamp: formatTime(8, 55),
+    risk: 'low',
+    status: 'inbox',
+    authIndicators: {
+      syntaxValid: true,
+      domainTrusted: true,
+      displayNameMismatch: false,
+      lookalikeDetected: false,
+      syntheticSpf: 'PASS',
+      syntheticDkim: 'PASS',
+      syntheticDmarc: 'PASS',
+    },
+    links: ['https://ehr.northstar-med.internal/er/bed-census'],
+    attachments: [],
+  },
+];
+
+export const initialAttachments: SimulatedAttachment[] = [
+  {
+    id: 'att-base-01',
+    filename: 'lab_report_signed.pdf',
+    extension: '.pdf',
+    detectedType: 'PDF Document',
+    size: '1.4 MB',
+    hash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+    archiveDepth: 0,
+    nestedFilesCount: 0,
+    compressionRatio: 'LOW',
+    executableContent: false,
+    scriptIndicators: false,
+    riskScore: 6,
+    decision: 'CLEAN',
+    uploadedAt: formatTime(8, 15),
+    sender: 'laboratory@trusted-hospital.example',
+  },
+  {
+    id: 'att-base-02',
+    filename: 'grand_rounds_agenda.pdf',
+    extension: '.pdf',
+    detectedType: 'PDF Document',
+    size: '840 KB',
+    hash: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
+    archiveDepth: 0,
+    nestedFilesCount: 0,
+    compressionRatio: 'LOW',
+    executableContent: false,
+    scriptIndicators: false,
+    riskScore: 8,
+    decision: 'CLEAN',
+    uploadedAt: formatTime(8, 30),
+    sender: 'cardiology-admin@northstar-med.org',
+  },
+];
+
+export const initialEHRAccesses: SimulatedEHRAccess[] = [
+  {
+    id: 'ehr-base-01',
+    timestamp: formatTime(8, 42),
+    doctorId: 'dr.sarah',
+    doctorName: 'Dr. Sarah Wilson',
+    patientId: 'pat-1042',
+    patientName: 'Maria Santos (#1042)',
+    department: 'Cardiology',
+    accessReason: 'Morning Clinical Rounds & Medication Review',
+    relationship: 'Direct Care',
+    device: 'Hospital Workstation 04',
+    isAnomalous: false,
+    isBreakGlass: false,
+    risk: 'low',
+  },
+  {
+    id: 'ehr-base-02',
+    timestamp: formatTime(8, 50),
+    doctorId: 'dr.chen',
+    doctorName: 'Dr. Marcus Chen',
+    patientId: 'pat-8819',
+    patientName: 'Thomas Brody (#8819)',
+    department: 'Radiology',
+    accessReason: 'Diagnostic Brain MRI Contrast Review',
+    relationship: 'Consulting',
+    device: 'Radiology PACS-02',
+    isAnomalous: false,
+    isBreakGlass: false,
+    risk: 'low',
+  },
+  {
+    id: 'ehr-base-03',
+    timestamp: formatTime(9, 0),
+    doctorId: 'dr.emily',
+    doctorName: 'Dr. Emily Carter',
+    patientId: 'pat-2201',
+    patientName: 'Lucas Gray (#2201)',
+    department: 'Emergency Medicine',
+    accessReason: 'Emergency Trauma Protocol - Unconscious Patient Intake',
+    relationship: 'Emergency Break-Glass',
+    device: 'ER-CrashCart-Tablet',
+    isAnomalous: false,
+    isBreakGlass: true,
+    breakGlassApproved: true,
+    breakGlassDecision: 'approved',
+    relatedEventId: 'evt-base-02',
+    risk: 'low',
+  },
+  {
+    id: 'ehr-base-04',
+    timestamp: formatTime(9, 15),
+    doctorId: 'dr.anderson',
+    doctorName: 'Dr. James Anderson',
+    patientId: 'pat-1003',
+    patientName: 'Robert Hayes (#10423)',
+    department: 'Oncology',
+    accessReason: 'Inpatient Chemotherapy Administration Sign-off',
+    relationship: 'Direct Care',
+    device: 'Oncology-Terminal-03',
+    isAnomalous: false,
+    isBreakGlass: false,
+    risk: 'low',
+  },
+];
+
+export const initialNetworkNodes: NetworkTelemetryNode[] = [
+  { id: 'node-ext', name: 'External Gateway / Ingress', type: 'internet', ip: '198.51.100.1', status: 'normal', trafficRate: '142 Mbps' },
+  { id: 'node-fw', name: 'Clinical Edge Firewall & IPS', type: 'firewall', ip: '10.0.0.1', status: 'normal', trafficRate: '128 Mbps' },
+  { id: 'node-dmz', name: 'DMZ Reverse Proxy & Auth Gateway', type: 'dmz', ip: '10.0.1.5', status: 'normal', trafficRate: '86 Mbps' },
+  { id: 'node-app', name: 'Clinical App Servers (EHR APIs)', type: 'app_servers', ip: '10.0.2.10', status: 'normal', trafficRate: '64 Mbps' },
+  { id: 'node-ehr', name: 'Synthetic EHR Database (FHIR Store)', type: 'ehr_db', ip: '10.0.3.50', status: 'normal', trafficRate: '38 Mbps' },
+  { id: 'node-ws', name: 'Hospital Workstations VLAN 5', type: 'workstation', ip: '10.0.5.0/24', status: 'normal', trafficRate: '22 Mbps' },
+];
+
+export const initialEvents: SecurityEvent[] = [
+  {
+    id: 'evt-base-01',
+    timestamp: formatTime(8, 0),
+    eventType: 'EMAIL_RECEIVED',
+    category: 'system',
+    severity: 'low',
+    title: 'CareSentinel Platform Baseline Initialized',
+    description: 'Continuous monitoring active across Exchange email gateway, IAM SSO, clinical network NIDS, and EHR API feeds.',
+    source: 'CareSentinel Core',
+    system: 'CareSentinel Ingestion Engine',
+    status: 'acknowledged',
+    riskContribution: 0,
+    metadata: { environment: 'Synthetic Northstar Medical Center', monitoring: 'Active' },
+  },
+  {
+    id: 'evt-base-02',
+    timestamp: formatTime(9, 0),
+    eventType: 'BREAK_GLASS',
+    category: 'ehr',
+    severity: 'low',
+    title: 'Emergency Break-Glass Access Verified',
+    description: 'Dr. Emily Carter activated emergency trauma intake protocol for Lucas Gray (#2201). Justification documented and verified as part of the synthetic baseline.',
+    source: 'EHR Connector Sentry',
+    actor: 'Dr. Emily Carter',
+    userId: 'dr.emily',
+    system: 'Epic/Cerner EHR Connector',
+    status: 'resolved',
+    responseStatus: 'approved',
+    riskContribution: 0,
+    metadata: { patientId: 'pat-2201', protocol: 'Trauma Code Alpha', breakGlassApproved: true, breakGlassDecision: 'approved', accessId: 'ehr-base-03' },
+  },
+];
+
+export const initialIncidents: CorrelatedIncident[] = [];
+
+export const initialAuditLog: AuditEvent[] = [
+  { id: 'aud-base-01', timestamp: formatTime(8, 0), actor: 'System Core', system: 'CareSentinel Orchestrator', action: 'CareSentinel SOC environment initialized', outcome: 'success', details: 'All connectors online: Email Gateway, LinkGuard, IAM Provider, NIDS, Epic/Cerner Connector' },
+  { id: 'aud-base-02', timestamp: formatTime(8, 15), actor: 'CareSentinel NIDS', system: 'Network Telemetry', action: 'NIDS baseline traffic inspection active', outcome: 'success', details: 'Clinical VLAN 5 and FHIR API subnets operating within standard traffic envelopes' },
+  { id: 'aud-base-03', timestamp: formatTime(9, 0), actor: 'Clinical Privacy Officer', system: 'EHR Audit Core', action: 'Break-glass access approved: Dr. Emily Carter -> Patient #2201', outcome: 'success', details: 'Emergency Trauma Protocol justified and committed to compliance ledger' },
+];
+
+export const initialNotifications: AppNotification[] = [
+  { 
+    id: 'not-base-01', 
+    title: 'CareSentinel Sentry Active', 
+    message: 'Clinical Security Operations Center monitoring Northstar Medical Center synthetic environment.', 
+    timestamp: formatTime(8, 0), 
+    read: true, 
+    severity: 'low', 
+    targetView: 'Overview'
+  },
+];
+
+export const initialPosture: SecurityPosture = {
+  score: 96,
+  label: 'Protected',
+  categoryScores: {
+    email: 100,
+    linkguard: 100,
+    identity: 100,
+    network: 100,
+    application: 100,
+    ehr: 94,
+    system: 100,
+  },
+  riskFactors: [],
+  lastCalculated: formatTime(9, 0),
+};
+
+// Deep clone function to restore pristine baseline
+export function createInitialBaseline() {
+  return {
+    appMode: 'console' as const,
+    publicPage: 'home' as const,
+    currentView: 'Overview',
+    events: JSON.parse(JSON.stringify(initialEvents)) as SecurityEvent[],
+    incidents: JSON.parse(JSON.stringify(initialIncidents)) as CorrelatedIncident[],
+    auditLog: JSON.parse(JSON.stringify(initialAuditLog)) as AuditEvent[],
+    notifications: JSON.parse(JSON.stringify(initialNotifications)) as AppNotification[],
+    users: JSON.parse(JSON.stringify(initialUsers)) as SimulatedUser[],
+    devices: JSON.parse(JSON.stringify(initialDevices)) as SimulatedDevice[],
+    emails: JSON.parse(JSON.stringify(initialEmails)) as SimulatedEmail[],
+    attachments: JSON.parse(JSON.stringify(initialAttachments)) as SimulatedAttachment[],
+    patients: JSON.parse(JSON.stringify(initialPatients)) as SimulatedPatient[],
+    ehrAccesses: JSON.parse(JSON.stringify(initialEHRAccesses)) as SimulatedEHRAccess[],
+    securityPosture: JSON.parse(JSON.stringify(initialPosture)) as SecurityPosture,
+    attackChainProgress: 0,
+    isRunningChain: false,
+    searchQuery: '',
+    selectedIncidentId: null,
+    guidedDemoActive: false,
+    guidedDemoStep: 0,
+    networkNodes: JSON.parse(JSON.stringify(initialNetworkNodes)) as NetworkTelemetryNode[],
+  };
+}
