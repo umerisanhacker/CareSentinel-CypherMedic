@@ -150,6 +150,58 @@ export default function NetworkView() {
         </div>
       </div>
 
+      {/* Medical device cyber-physical layer */}
+      <div className="card" style={{ padding: '1.5rem', backgroundColor: 'white' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>Medical Device Network Layer</h2>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+              Synthetic biomedical assets mapped to their clinical network zones.
+            </div>
+          </div>
+          <span className="badge bg-accent-light">CYBER-PHYSICAL VIEW</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+          {state.devices.filter(device => device.deviceClass === 'clinical').map(device => {
+            const activeEvent = events.find(event =>
+              event.deviceId === device.id &&
+              (event.status === 'new' || event.status === 'acknowledged')
+            );
+            return (
+              <div
+                key={device.id}
+                style={{
+                  padding: '0.85rem',
+                  borderRadius: '10px',
+                  border: activeEvent ? '1px solid #fed7aa' : '1px solid var(--border)',
+                  background: activeEvent ? '#fff7ed' : '#f8fafc',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', alignItems: 'flex-start' }}>
+                  <div style={{ fontSize: '0.76rem', fontWeight: 800, color: 'var(--text-primary)' }}>{device.name}</div>
+                  <span style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: activeEvent ? 'var(--critical)' : 'var(--positive)',
+                    flexShrink: 0,
+                  }} />
+                </div>
+                <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                  {device.networkZone || 'Clinical VLAN'}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.7rem', fontSize: '0.64rem' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>{device.ip}</span>
+                  <strong style={{ color: activeEvent ? 'var(--critical)' : 'var(--positive)' }}>
+                    {activeEvent ? 'ANOMALY' : 'NORMAL'}
+                  </strong>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* 2-Column: Selected Node Details (Left) + Intrusion Telemetry Alerts (Right) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', alignItems: 'flex-start' }}>
         {/* Selected Node Inspector */}
