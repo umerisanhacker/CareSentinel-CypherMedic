@@ -51,6 +51,11 @@ export interface SimulatedDevice {
     clinicalApprovalRequired: boolean;
     biomedicalApprovalRequired: boolean;
   };
+  lifecycleStatus?: 'active' | 'maintenance' | 'decommissioned' | 'retired';
+  firmwareVersion?: string;
+  lastMaintenance?: string;
+  maintenanceWindow?: string;
+  clinicalOperationalStatus?: 'normal' | 'warning' | 'critical';
 }
 
 export interface SimulatedEmail {
