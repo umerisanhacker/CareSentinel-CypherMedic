@@ -1,8 +1,6 @@
 {
   "name": "CareSentinel - Clinical Security Intelligence",
-  "description": "Healthcare cybersecurity operations and clinical security intelligence platform for threat monitoring, EHR security, and incident response.",
+  "description": "Healthcare cybersecurity operations and clinical security intelligence platform for threat monitoring, EHR security, connected medical-device security, and incident response.",
   "prompt": "CareSentinel - Clinical Security Intelligence dashboard",
-  "capabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
+  "capabilities": []
 }
