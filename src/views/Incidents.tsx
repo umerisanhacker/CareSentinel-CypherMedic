@@ -111,7 +111,7 @@ export default function Incidents() {
       }
       if (index === 5 && type === 'contained') {
         if (deviceId) {
-          const deviceEvent = incidentEvents.find(e => e.deviceId === deviceId);
+          const deviceEvent = events.find(e => activeIncident.eventIds.includes(e.id) && e.deviceId === deviceId);
           if (deviceEvent) safeContainDevice(deviceId, deviceEvent.id);
         }
         if (emailId) quarantineEmail(emailId, 'Synthetic incident containment playbook');
