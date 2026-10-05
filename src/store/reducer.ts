@@ -646,7 +646,7 @@ export function rootReducer(state: AppState, action: Action): AppState {
       }
 
       const newEvents = [...generatedEvents, ...state.events];
-      const newIncidents = correlateEvents(newEvents, state.incidents);
+      const newIncidents = correlateEvents(newEvents, state.incidents, state.devices);
       const newPosture = calculatePosture(newEvents);
 
       const newAudit: AuditEvent = {
@@ -693,7 +693,7 @@ export function rootReducer(state: AppState, action: Action): AppState {
 
     case 'ADD_EVENT': {
       const newEvents = [action.payload, ...state.events];
-      const newIncidents = correlateEvents(newEvents, state.incidents);
+      const newIncidents = correlateEvents(newEvents, state.incidents, state.devices);
       const newPosture = calculatePosture(newEvents);
       
       const newNotif: AppNotification = {
@@ -717,7 +717,7 @@ export function rootReducer(state: AppState, action: Action): AppState {
     
     case 'ADD_EVENTS': {
       const newEvents = [...action.payload, ...state.events];
-      const newIncidents = correlateEvents(newEvents, state.incidents);
+      const newIncidents = correlateEvents(newEvents, state.incidents, state.devices);
       const newPosture = calculatePosture(newEvents);
       return {
         ...state,
