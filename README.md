@@ -10,21 +10,21 @@ Repository: `umerisanhacker/CareSentinel-CypherMedic`
 
 ## Team Name
 
-**[TEAM NAME — UPDATE BEFORE SUBMISSION]**
+**[VERIFY WITH OFFICIAL COMPETITION REGISTRATION]**
 
-> The repository does not currently contain a verified team name, so this field is intentionally marked rather than guessed.
+> The official team name is not stored in the repository. Replace this marker with the registered team name before submission.
 
 ## Selected Track
 
-**[SELECTED TRACK — UPDATE BEFORE SUBMISSION]**
+**[VERIFY WITH OFFICIAL COMPETITION REGISTRATION]**
 
-> The selected competition track is not present in the repository source currently available, so it is intentionally marked rather than guessed.
+> The official selected track is not stored in the repository. Replace this marker with the registered track before submission.
 
 ## Challenge Number & Title
 
-**[CHALLENGE NUMBER & TITLE — UPDATE BEFORE SUBMISSION]**
+**[VERIFY WITH OFFICIAL CHALLENGE BRIEF]**
 
-> The official challenge number/title is not stored in the repository source currently available, so it is intentionally marked rather than guessed.
+> The official challenge number and title are not stored in the repository. Replace this marker with the exact competition wording before submission.
 
 ## Problem Statement
 
@@ -405,7 +405,7 @@ AUDITABLE OUTCOME
 
 ## Testing / Evaluation Results
 
-The implemented synthetic medical-device workflow has been exercised through the application's attack-simulation path.
+The repository contains the implemented synthetic medical-device workflow, including the attack-simulation path, deterministic rule engine, device risk/clinical-impact assessment, incident correlation, and response workflow. Build/lint execution is environment-dependent and must be recorded from the final submission environment.
 
 ### Evaluated Capabilities
 
@@ -437,7 +437,7 @@ npm run build
 npm run lint
 ```
 
-and record the final results here.
+and replace this sentence with the actual final command output/result before submission.
 
 ## Limitations
 
@@ -451,12 +451,59 @@ and record the final results here.
 
 ## Team Members
 
-- **[TEAM MEMBER 1 — UPDATE]**
-- **[TEAM MEMBER 2 — UPDATE]**
-- **[TEAM MEMBER 3 — UPDATE, IF APPLICABLE]**
-- **[TEAM MEMBER 4 — UPDATE, IF APPLICABLE]**
+- **[VERIFY TEAM MEMBER 1]** — [CONTRIBUTION]
+- **[VERIFY TEAM MEMBER 2]** — [CONTRIBUTION]
+- **[VERIFY TEAM MEMBER 3, IF APPLICABLE]** — [CONTRIBUTION]
+- **[VERIFY TEAM MEMBER 4, IF APPLICABLE]** — [CONTRIBUTION]
 
-> Team membership is intentionally not guessed because the repository does not currently contain a verified team roster.
+> The repository does not currently contain a verified competition team roster or contribution statement. Replace these placeholders before submission.
+
+## Security & Responsible Testing
+
+CareSentinel is a healthcare cybersecurity prototype intended for authorized demonstration and testing environments.
+
+- Medical devices and telemetry in this repository are synthetic.
+- No real patient records, live patient telemetry, or production hospital data are required by the prototype.
+- Attack scenarios are simulated inside the application.
+- The application is not intended to connect to or control real medical equipment.
+- Clinically connected critical devices require explicit SOC review before disruptive containment in the prototype workflow.
+- CareSentinel does not provide medical diagnosis, treatment, or autonomous clinical decisions.
+- Do not use the project to probe, attack, isolate, or otherwise interfere with systems or devices without explicit authorization.
+
+## Third-Party Components & Licenses
+
+The project uses the following direct dependencies. Their licenses are separate from this repository's MIT license:
+
+| Component | Version | License |
+|---|---:|---|
+| React | 19.2.8 | MIT |
+| React DOM | 19.2.8 | MIT |
+| Vite | ^8.3.0 | MIT |
+| TypeScript | ~6.0.2 | Apache-2.0 |
+| Lucide React | ^1.50.0 | ISC |
+| Recharts | ^3.10.1 | MIT |
+| OGL | ^1.0.11 | Unlicense |
+| @vitejs/plugin-react | ^6.1.1 | MIT |
+| @types/node | ^24.13.3 | MIT |
+| @types/react | ^19.2.18 | MIT |
+| @types/react-dom | ^19.2.7 | MIT |
+| Oxlint | ^1.81.0 | MIT |
+
+Transitive dependencies retain their respective upstream licenses. Dependency versions and license notices should be rechecked when dependencies are upgraded.
+
+## Repository Security Checklist
+
+Before final submission:
+
+- [ ] No API keys, passwords, tokens, or private keys are committed.
+- [ ] No real patient/confidential data is committed.
+- [ ] Environment files containing secrets are ignored.
+- [ ] Final `npm run build` succeeds.
+- [ ] Final `npm run lint` succeeds.
+- [ ] Final submission commit/tag is recorded.
+- [ ] Official team/track/challenge metadata is filled in.
+- [ ] KMCT Centre of Excellence collaborator access is verified.
+- [ ] Team contributions are documented.
 
 ## Competition Submission Checklist
 
