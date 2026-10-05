@@ -90,6 +90,7 @@ export const initialDevices: SimulatedDevice[] = [
     assignedBiomedicalEngineer: 'Arun Joseph',
     bedOrLocation: 'ICU Bay 02 · Bed ICU-07',
     safetyEnvelope: { patientMonitoringRequired: true, directIsolationAllowed: false, upstreamContainmentAllowed: true, clinicalApprovalRequired: true, biomedicalApprovalRequired: true },
+    lifecycleStatus: 'active', firmwareVersion: '5.2.1', lastMaintenance: '2026-09-18', maintenanceWindow: '02:00–04:00', clinicalOperationalStatus: 'normal',
   },
   {
     id: 'dev-007',
@@ -112,6 +113,7 @@ export const initialDevices: SimulatedDevice[] = [
     assignedBiomedicalEngineer: 'Arun Joseph',
     bedOrLocation: 'ICU Bay 04 · Bed ICU-09',
     safetyEnvelope: { patientMonitoringRequired: true, directIsolationAllowed: false, upstreamContainmentAllowed: true, clinicalApprovalRequired: true, biomedicalApprovalRequired: true },
+    lifecycleStatus: 'active', firmwareVersion: '4.9.3', lastMaintenance: '2026-09-12', maintenanceWindow: '01:00–03:00', clinicalOperationalStatus: 'normal',
   },
   {
     id: 'dev-008',
@@ -134,6 +136,7 @@ export const initialDevices: SimulatedDevice[] = [
     assignedBiomedicalEngineer: 'Arun Joseph',
     bedOrLocation: 'ICU Bay 06 · Bed ICU-11',
     safetyEnvelope: { patientMonitoringRequired: true, directIsolationAllowed: false, upstreamContainmentAllowed: true, clinicalApprovalRequired: true, biomedicalApprovalRequired: true },
+    lifecycleStatus: 'active', firmwareVersion: '3.8.6', lastMaintenance: '2026-08-29', maintenanceWindow: '03:00–05:00', clinicalOperationalStatus: 'normal',
   },
   {
     id: 'dev-009',
@@ -156,6 +159,7 @@ export const initialDevices: SimulatedDevice[] = [
     assignedBiomedicalEngineer: 'Arun Joseph',
     bedOrLocation: 'ICU Bay 08 · Bed ICU-13',
     safetyEnvelope: { patientMonitoringRequired: true, directIsolationAllowed: false, upstreamContainmentAllowed: true, clinicalApprovalRequired: true, biomedicalApprovalRequired: true },
+    lifecycleStatus: 'active', firmwareVersion: '7.1.0', lastMaintenance: '2026-09-05', maintenanceWindow: '00:30–02:30', clinicalOperationalStatus: 'normal',
   },
   {
     id: 'dev-010',
@@ -178,6 +182,7 @@ export const initialDevices: SimulatedDevice[] = [
     assignedBiomedicalEngineer: 'Arun Joseph',
     bedOrLocation: 'Dialysis Unit · Station 04',
     safetyEnvelope: { patientMonitoringRequired: false, directIsolationAllowed: true, upstreamContainmentAllowed: true, clinicalApprovalRequired: false, biomedicalApprovalRequired: true },
+    lifecycleStatus: 'active', firmwareVersion: '6.4.2', lastMaintenance: '2026-09-20', maintenanceWindow: '04:00–05:00', clinicalOperationalStatus: 'normal',
   },
   {
     id: 'dev-011',
@@ -200,6 +205,7 @@ export const initialDevices: SimulatedDevice[] = [
     assignedBiomedicalEngineer: 'Maya Thomas',
     bedOrLocation: 'Radiology Reading Room · PACS-02',
     safetyEnvelope: { patientMonitoringRequired: false, directIsolationAllowed: true, upstreamContainmentAllowed: true, clinicalApprovalRequired: false, biomedicalApprovalRequired: true },
+    lifecycleStatus: 'active', firmwareVersion: '2.7.9', lastMaintenance: '2026-09-16', maintenanceWindow: '23:00–01:00', clinicalOperationalStatus: 'normal',
   },
 ];
 
