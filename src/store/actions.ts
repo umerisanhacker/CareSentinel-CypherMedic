@@ -33,6 +33,8 @@ export type Action =
   | { type: 'FLAG_USER'; payload: { userId: string; reason?: string } }
   | { type: 'UNFLAG_USER'; payload: { userId: string } }
   | { type: 'ISOLATE_DEVICE'; payload: { deviceId: string } }
+  | { type: 'SAFE_CONTAIN_DEVICE'; payload: { deviceId: string; eventId: string } }
+  | { type: 'ESCALATE_CLINICAL_DEVICE'; payload: { deviceId: string; eventId: string } }
   | { type: 'ISOLATE_NETWORK_NODE'; payload: { nodeId: string; reason?: string } }
   | { type: 'RESTORE_DEVICE'; payload: { deviceId: string } }
   | { type: 'UPDATE_INCIDENT_STATUS'; payload: { incidentId: string; status: IncidentStatus } }
