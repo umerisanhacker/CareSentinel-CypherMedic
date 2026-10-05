@@ -13,6 +13,8 @@ import {
   Stethoscope,
   UserRound,
   XCircle,
+  Search,
+  SlidersHorizontal,
 } from 'lucide-react';
 import {
   useDevices,
@@ -42,6 +44,13 @@ export default function Devices() {
   const escalateClinicalDevice = useEscalateClinicalDevice();
   const resolveSecurityEvent = useResolveSecurityEvent();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [deviceSearch, setDeviceSearch] = useState('');
+  const [deviceTypeFilter, setDeviceTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [criticalityFilter, setCriticalityFilter] = useState('all');
+  const [connectionFilter, setConnectionFilter] = useState('all');
+  const [networkZoneFilter, setNetworkZoneFilter] = useState('all');
+  const [anomaliesOnly, setAnomaliesOnly] = useState(false);
 
   const medicalDevices = devices.filter(d => d.deviceClass === 'clinical' || /medical|monitor|ventilator|dialysis|infusion|pacs/i.test(d.type));
   const selectedDevice = devices.find(d => d.id === selectedId) || medicalDevices[0];
@@ -58,9 +67,72 @@ export default function Devices() {
   }, [events]);
 
   const activeEvent = selectedDevice ? activeDeviceEvents.get(selectedDevice.id) : undefined;
+
+  const deviceTypes = useMemo(
+    () => Array.from(new Set(medicalDevices.map(d => d.type).filter(Boolean))).sort(),
+    [medicalDevices]
+  );
+  const networkZones = useMemo(
+    () => Array.from(new Set(medicalDevices.map(d => d.networkZone || 'Clinical VLAN'))).sort(),
+    [medicalDevices]
+  );
+
+  const filteredDevices = useMemo(() => {
+    const query = deviceSearch.trim().toLowerCase();
+    return medicalDevices.filter(device => {
+      const searchable = [
+        device.name,
+        device.ip,
+        device.type,
+        device.location,
+        device.manufacturer,
+        device.model,
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      if (query && !searchable.includes(query)) return false;
+      if (deviceTypeFilter !== 'all' && device.type !== deviceTypeFilter) return false;
+      if (statusFilter !== 'all' && device.status !== statusFilter) return false;
+      if (criticalityFilter !== 'all' && device.clinicalCriticality !== criticalityFilter) return false;
+      if (connectionFilter === 'connected' && !device.patientConnected) return false;
+      if (connectionFilter === 'not_connected' && device.patientConnected) return false;
+      if (networkZoneFilter !== 'all' && (device.networkZone || 'Clinical VLAN') !== networkZoneFilter) return false;
+      if (anomaliesOnly && !activeDeviceEvents.has(device.id)) return false;
+      return true;
+    });
+  }, [
+    medicalDevices,
+    deviceSearch,
+    deviceTypeFilter,
+    statusFilter,
+    criticalityFilter,
+    connectionFilter,
+    networkZoneFilter,
+    anomaliesOnly,
+    activeDeviceEvents,
+  ]);
+
   const anomalyCount = activeDeviceEvents.size;
   const onlineCount = medicalDevices.filter(d => d.status === 'online').length;
   const patientConnectedCount = medicalDevices.filter(d => d.patientConnected).length;
+
+  const hasDeviceFilters =
+    deviceSearch.trim() ||
+    deviceTypeFilter !== 'all' ||
+    statusFilter !== 'all' ||
+    criticalityFilter !== 'all' ||
+    connectionFilter !== 'all' ||
+    networkZoneFilter !== 'all' ||
+    anomaliesOnly;
+
+  const clearDeviceFilters = () => {
+    setDeviceSearch('');
+    setDeviceTypeFilter('all');
+    setStatusFilter('all');
+    setCriticalityFilter('all');
+    setConnectionFilter('all');
+    setNetworkZoneFilter('all');
+    setAnomaliesOnly(false);
+  };
 
   const handleContain = () => {
     if (!selectedDevice || !activeEvent) return;
@@ -143,8 +215,125 @@ export default function Devices() {
             <Stethoscope size={21} color="var(--accent-primary)" />
           </div>
 
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1fr) auto',
+            gap: '0.7rem',
+            padding: '0.8rem',
+            marginBottom: '1rem',
+            background: '#f8fafc',
+            border: '1px solid var(--border)',
+            borderRadius: '12px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', minWidth: 0 }}>
+              <Search size={16} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+              <input
+                value={deviceSearch}
+                onChange={e => setDeviceSearch(e.target.value)}
+                placeholder="Search device, IP, model, manufacturer..."
+                aria-label="Search medical devices"
+                style={{
+                  width: '100%',
+                  minWidth: 0,
+                  border: 'none',
+                  outline: 'none',
+                  background: 'transparent',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.78rem',
+                }}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={clearDeviceFilters}
+              disabled={!hasDeviceFilters}
+              className="btn btn-outline"
+              style={{ fontSize: '0.7rem', padding: '0.45rem 0.7rem', opacity: hasDeviceFilters ? 1 : 0.5 }}
+            >
+              Clear
+            </button>
+
+            <div style={{
+              gridColumn: '1 / -1',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(5, minmax(120px, 1fr))',
+              gap: '0.55rem',
+            }}>
+              {[
+                { value: deviceTypeFilter, set: setDeviceTypeFilter, label: 'Device type', options: deviceTypes },
+                { value: statusFilter, set: setStatusFilter, label: 'Status', options: ['online', 'flagged', 'isolated'] },
+                { value: criticalityFilter, set: setCriticalityFilter, label: 'Clinical criticality', options: ['critical', 'high', 'medium', 'low'] },
+                { value: connectionFilter, set: setConnectionFilter, label: 'Patient connection', options: ['connected', 'not_connected'] },
+                { value: networkZoneFilter, set: setNetworkZoneFilter, label: 'Network zone', options: networkZones },
+              ].map(filter => (
+                <label key={filter.label} style={{ minWidth: 0 }}>
+                  <span style={{ display: 'block', fontSize: '0.61rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '0.25rem', textTransform: 'uppercase' }}>
+                    {filter.label}
+                  </span>
+                  <select
+                    value={filter.value}
+                    onChange={e => filter.set(e.target.value)}
+                    style={{
+                      width: '100%',
+                      minWidth: 0,
+                      height: '34px',
+                      padding: '0 0.5rem',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      background: 'white',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.68rem',
+                      fontWeight: 650,
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="all">All</option>
+                    {filter.options.map(option => (
+                      <option key={option} value={option}>
+                        {option === 'not_connected' ? 'Not connected' : option.replace(/_/g, ' ')}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ))}
+            </div>
+
+            <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setAnomaliesOnly(value => !value)}
+                aria-pressed={anomaliesOnly}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  border: anomaliesOnly ? '1px solid #f59e0b' : '1px solid var(--border)',
+                  borderRadius: '8px',
+                  padding: '0.42rem 0.65rem',
+                  background: anomaliesOnly ? '#fff7ed' : 'white',
+                  color: anomaliesOnly ? '#c2410c' : 'var(--text-secondary)',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                }}
+              >
+                <AlertTriangle size={13} />
+                Anomalies only
+              </button>
+              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                Showing {filteredDevices.length} of {medicalDevices.length} devices
+              </span>
+            </div>
+          </div>
+
           <div style={{ display: 'grid', gap: '0.7rem' }}>
-            {medicalDevices.map(device => {
+            {filteredDevices.length === 0 ? (
+              <div style={{ padding: '2rem 1rem', textAlign: 'center', border: '1px dashed var(--border)', borderRadius: '10px', color: 'var(--text-muted)' }}>
+                <SlidersHorizontal size={22} style={{ margin: '0 auto 0.5rem' }} />
+                <div style={{ fontWeight: 800, fontSize: '0.82rem', color: 'var(--text-secondary)' }}>No devices match these filters</div>
+                <div style={{ fontSize: '0.7rem', marginTop: '0.25rem' }}>Adjust the filters or clear them to restore the full inventory.</div>
+              </div>
+            ) : filteredDevices.map(device => {
               const tone = statusTone(device.status);
               const event = activeDeviceEvents.get(device.id);
               const isSelected = selectedDevice?.id === device.id;
