@@ -155,7 +155,7 @@ function safeContainClinicalDevice(state: AppState, deviceId: string, eventId: s
   const event = state.events.find(e => e.id === eventId);
   if (!device || !event) return state;
   const now = new Date().toISOString();
-  const updatedEvents = state.events.map(e => e.id === eventId ? { ...e, status: 'resolved' as const, responseStatus: 'contained' as const, metadata: { ...e.metadata, containmentMode: 'UPSTREAM_SAFE_CONTAINMENT', clinicalOperationPreserved: true, patientMonitoringInterrupted: false, clinicalApproval: 'SOC_APPROVED' } } : e);
+  const updatedEvents = state.events.map(e => e.id === eventId ? { ...e, status: 'resolved' as const, responseStatus: 'contained' as const, metadata: { ...e.metadata, containmentMode: 'UPSTREAM_SAFE_CONTAINMENT', clinicalOperationPreserved: true, patientMonitoringInterrupted: false, responseAuthorization: 'SOC_SAFE_CONTAINMENT_APPROVED' } } : e);
   const updatedDevices = state.devices.map(d => d.id === deviceId ? { ...d, status: 'online' as const, currentTrafficMbps: d.normalTrafficMbps ?? d.currentTrafficMbps } : d);
   const audit: AuditEvent = { id: 'aud-safe-contain-' + Date.now(), timestamp: now, actor: 'SOC Analyst', system: 'Clinical Safety Response Engine', action: 'Safe containment approved — malicious network path restricted', outcome: 'success', relatedEventId: eventId, details: 'Contained suspicious network activity upstream of ' + device.name + '; clinical operation preserved. Patient-connected device was not directly isolated.' };
   const notifications = createClinicalEscalationNotifications(device, eventId, now);
