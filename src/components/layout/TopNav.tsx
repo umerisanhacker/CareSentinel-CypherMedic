@@ -71,114 +71,85 @@ export function TopNav() {
   return (
     <>
       <header className="top-nav">
-        {/* Left side: Search & Demo indicator */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, maxWidth: '640px' }}>
-          <div 
-            onClick={() => setShowSearchModal(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              backgroundColor: 'var(--bg-main)',
-              border: '1px solid var(--border)',
-              padding: '0.45rem 0.9rem',
-              borderRadius: '8px',
-              width: '100%',
-              maxWidth: '340px',
-              cursor: 'pointer',
-              transition: 'border-color 0.15s ease',
-            }}
-          >
-            <Search size={16} color="var(--text-muted)" />
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.6rem' }}>
-              Search incidents, patients, doctors...
-            </span>
-            <span style={{
-              marginLeft: 'auto',
-              fontSize: '0.7rem',
-              backgroundColor: 'white',
-              border: '1px solid var(--border)',
-              padding: '0.1rem 0.4rem',
-              borderRadius: '4px',
-              color: 'var(--text-muted)',
-              fontWeight: 600,
-            }}>
-              ⌘K
-            </span>
-          </div>
-
-          <div className="topnav-demo-badge">
-            <ShieldCheck size={14} color="var(--positive)" />
-            <span>DEMO MODE — Synthetic Hospital</span>
-          </div>
-
+        <div className="topnav-search-zone">
           <button
-            onClick={() => setShowResetModal(true)}
-            title="Reset Demo Environment"
-            className="topnav-reset-btn"
+            type="button"
+            onClick={() => setShowSearchModal(true)}
+            className="topnav-search"
+            aria-label="Search CareSentinel"
           >
-            <RotateCcw size={13} color="var(--warning)" />
-            <span>Reset Demo</span>
+            <Search size={16} />
+            <span>Search incidents, patients, doctors...</span>
+            <kbd>⌘K</kbd>
           </button>
+        </div>
+
+        <div className="topnav-command-zone">
+          <div className="topnav-environment">
+            <span className="topnav-environment-dot"><ShieldCheck size={13} /></span>
+            <span>DEMO MODE</span>
+            <span className="topnav-environment-divider" />
+            <span className="topnav-environment-context">Synthetic Hospital</span>
+          </div>
+
+          <div className="topnav-actions">
+            <button
+              type="button"
+              onClick={() => setShowResetModal(true)}
+              title="Reset Demo Environment"
+              className="topnav-reset-btn"
+            >
+              <RotateCcw size={14} />
+              <span>Reset Demo</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowGuidedDemo(true)}
+              className="topnav-demo-btn"
+            >
+              <Play size={14} />
+              <span>Start Guided Demo</span>
+            </button>
+          </div>
 
           {resetFeedback && (
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--positive)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-              <ShieldCheck size={14} /> {resetFeedback}
+            <span className="topnav-feedback" role="status">
+              <ShieldCheck size={14} />
+              {resetFeedback}
             </span>
           )}
         </div>
 
-        {/* Right side: System health, Guided Demo, Notifications, Public Toggle, Profile */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <button
-            onClick={() => setShowGuidedDemo(true)}
-            className="btn btn-outline topnav-demo-btn"
-          >
-            <Play size={14} /> Start Guided Demo
-          </button>
-
-          <div className="topnav-system-status">
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--positive)', display: 'inline-block' }}></span>
-            <span style={{ fontWeight: 500 }}>All Systems Monitored</span>
+        <div className="topnav-utility-zone">
+          <div className="topnav-system-status" aria-label="System monitoring status">
+            <span className="topnav-status-dot" />
+            <span>All Systems Monitored</span>
           </div>
 
-          <div className="topnav-divider" aria-hidden="true"></div>
+          <div className="topnav-divider" aria-hidden="true" />
 
-          {/* Notifications Dropdown */}
           <div style={{ position: 'relative' }}>
-            <button 
+            <button
+              type="button"
               onClick={() => {
                 setShowNotifs(!showNotifs);
                 if (!showNotifs) markNotificationsRead();
               }}
-              className="topnav-icon-btn" aria-label="Security notifications"
+              className="topnav-icon-btn"
+              aria-label="Security notifications"
+              aria-expanded={showNotifs}
             >
               <Bell size={19} />
               {unreadCount > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '-2px',
-                  right: '-2px',
-                  minWidth: '16px',
-                  height: '16px',
-                  padding: '0 4px',
-                  backgroundColor: 'var(--critical)',
-                  color: 'white',
-                  borderRadius: '9999px',
-                  fontSize: '10px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 700,
-                }}>
-                  {unreadCount}
-                </span>
+                <span className="topnav-notification-count">{unreadCount}</span>
               )}
             </button>
-            
+
             {showNotifs && (
               <div style={{
                 position: 'absolute',
-                top: '100%',
+                top: 'calc(100% + 0.55rem)',
                 right: 0,
                 width: '360px',
                 backgroundColor: 'var(--bg-card)',
@@ -186,14 +157,13 @@ export function TopNav() {
                 borderRadius: '12px',
                 boxShadow: 'var(--shadow-lg)',
                 zIndex: 60,
-                marginTop: '0.5rem',
                 padding: '1rem',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                     Security Notifications
                   </div>
-                  <button 
+                  <button
                     onClick={markNotificationsRead}
                     style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', fontWeight: 500 }}
                   >
@@ -206,8 +176,8 @@ export function TopNav() {
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center', padding: '1rem' }}>No notifications</p>
                   ) : (
                     notifications.map(n => (
-                      <div 
-                        key={n.id} 
+                      <div
+                        key={n.id}
                         onClick={() => handleNotificationClick(n)}
                         style={{
                           display: 'flex',
@@ -239,127 +209,69 @@ export function TopNav() {
             )}
           </div>
 
-          {/* Switch to Public Website */}
           <button
+            type="button"
             onClick={() => setAppMode('public')}
             className="btn btn-secondary topnav-public-btn"
             title="Switch to Public Product Website"
           >
-            Public Site <ExternalLink size={13} />
+            <span>Public Site</span>
+            <ExternalLink size={13} />
           </button>
 
-          {/* Workspace / Role Switcher */}
-          <div style={{ position: 'relative' }}>
+          <div className="topnav-user-zone">
             <button
               type="button"
               onClick={() => setShowWorkspaceMenu(value => !value)}
               aria-haspopup="menu"
               aria-expanded={showWorkspaceMenu}
               title="Switch security workspace"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.55rem',
-                padding: '0.35rem 0.55rem',
-                borderRadius: '9px',
-                border: showWorkspaceMenu ? '1px solid var(--accent-primary)' : '1px solid transparent',
-                background: showWorkspaceMenu ? 'var(--bg-hover)' : 'transparent',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
+              className="topnav-user-btn"
             >
-              <div style={{
-                width: '34px',
-                height: '34px',
-                borderRadius: '50%',
-                backgroundColor: workspaceRole === 'incident_response' ? '#f3e8ff' : 'var(--accent-light)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: workspaceRole === 'incident_response' ? '#7c3aed' : 'var(--accent-primary)',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-              }}>
+              <div className="topnav-avatar">
                 {workspaceRole === 'incident_response' ? 'IR' : 'SA'}
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', minWidth: '112px' }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.1 }}>
-                  {workspaceRole === 'incident_response' ? 'Incident Response' : 'SOC Analyst L2'}
-                </span>
-                <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
-                  Northstar Medical
-                </span>
+              <div className="topnav-user-copy">
+                <span>{workspaceRole === 'incident_response' ? 'Incident Response' : 'SOC Analyst L2'}</span>
+                <small>Northstar Medical</small>
               </div>
-              <ChevronDown size={14} color="var(--text-muted)" />
+              <ChevronDown size={14} />
             </button>
 
             {showWorkspaceMenu && (
               <div
                 role="menu"
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 0.45rem)',
-                  right: 0,
-                  width: '285px',
-                  padding: '0.45rem',
-                  background: 'white',
-                  border: '1px solid var(--border)',
-                  borderRadius: '12px',
-                  boxShadow: 'var(--shadow-lg)',
-                  zIndex: 100,
-                }}
+                className="topnav-workspace-menu"
               >
-                <div style={{ padding: '0.55rem 0.65rem 0.45rem', fontSize: '0.68rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Security Workspace
-                </div>
+                <div className="topnav-workspace-label">Security Workspace</div>
+
                 <button
                   type="button"
                   onClick={() => {
                     setWorkspaceRole('soc_analyst_l2');
                     setShowWorkspaceMenu(false);
                   }}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.65rem',
-                    padding: '0.7rem',
-                    borderRadius: '9px',
-                    background: workspaceRole === 'soc_analyst_l2' ? 'var(--bg-hover)' : 'transparent',
-                    color: 'var(--text-primary)',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                  }}
+                  className={workspaceRole === 'soc_analyst_l2' ? 'topnav-workspace-option active' : 'topnav-workspace-option'}
                 >
-                  <ShieldCheck size={17} color="var(--accent-primary)" />
-                  <span style={{ flex: 1 }}>
-                    <strong style={{ display: 'block', fontSize: '0.8rem' }}>SOC Analyst L2</strong>
-                    <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>Triage, investigation & correlation</span>
+                  <ShieldCheck size={17} />
+                  <span>
+                    <strong>SOC Analyst L2</strong>
+                    <small>Triage, investigation & correlation</small>
                   </span>
                 </button>
+
                 <button
                   type="button"
                   onClick={() => {
                     setWorkspaceRole('incident_response');
                     setShowWorkspaceMenu(false);
                   }}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.65rem',
-                    padding: '0.7rem',
-                    borderRadius: '9px',
-                    background: workspaceRole === 'incident_response' ? '#f5f3ff' : 'transparent',
-                    color: 'var(--text-primary)',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                  }}
+                  className={workspaceRole === 'incident_response' ? 'topnav-workspace-option ir-active' : 'topnav-workspace-option'}
                 >
-                  <UsersRound size={17} color="#7c3aed" />
-                  <span style={{ flex: 1 }}>
-                    <strong style={{ display: 'block', fontSize: '0.8rem' }}>Incident Response Team</strong>
-                    <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>Containment, eradication & recovery</span>
+                  <UsersRound size={17} />
+                  <span>
+                    <strong>Incident Response Team</strong>
+                    <small>Containment, eradication & recovery</small>
                   </span>
                 </button>
               </div>
