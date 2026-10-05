@@ -1544,3 +1544,148 @@ input, textarea, select {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+
+/* --------------------------------------------------------------------------
+   CareSentinel Enterprise Command Bar — final layout contract
+   Keep the three header zones independent so controls never collide/wrap.
+   -------------------------------------------------------------------------- */
+.top-nav {
+  display: grid !important;
+  grid-template-columns: 300px minmax(390px, 1fr) auto !important;
+  align-items: center !important;
+  column-gap: 1rem !important;
+  justify-content: initial !important;
+  overflow: visible !important;
+}
+
+.topnav-search-zone {
+  width: 300px !important;
+  min-width: 300px !important;
+  max-width: 300px !important;
+  flex: none !important;
+}
+
+.topnav-search {
+  box-sizing: border-box !important;
+  width: 300px !important;
+  min-width: 300px !important;
+  max-width: 300px !important;
+  flex: none !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+.topnav-search span {
+  display: block !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: auto !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.topnav-command-zone {
+  min-width: 390px !important;
+  width: auto !important;
+  flex: none !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+}
+
+.topnav-command-zone > * {
+  flex-shrink: 0 !important;
+}
+
+.topnav-actions {
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+}
+
+.topnav-utility-zone {
+  min-width: max-content !important;
+  width: max-content !important;
+  flex: none !important;
+  white-space: nowrap !important;
+}
+
+.topnav-utility-zone > * {
+  flex-shrink: 0 !important;
+}
+
+/* Keep the full desktop command bar intact until the viewport genuinely
+   becomes too narrow for all enterprise controls. */
+@media (max-width: 1450px) {
+  .top-nav {
+    grid-template-columns: 270px minmax(360px, 1fr) auto !important;
+    column-gap: .7rem !important;
+  }
+
+  .topnav-search-zone,
+  .topnav-search {
+    width: 270px !important;
+    min-width: 270px !important;
+    max-width: 270px !important;
+  }
+
+  .topnav-environment-context {
+    display: none !important;
+  }
+
+  .topnav-environment-divider {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .top-nav {
+    grid-template-columns: 230px minmax(320px, 1fr) auto !important;
+  }
+
+  .topnav-search-zone,
+  .topnav-search {
+    width: 230px !important;
+    min-width: 230px !important;
+    max-width: 230px !important;
+  }
+
+  .topnav-system-status {
+    display: none !important;
+  }
+
+  .topnav-user-copy {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .top-nav {
+    display: flex !important;
+    gap: .6rem !important;
+    overflow-x: auto !important;
+    scrollbar-width: none;
+  }
+
+  .top-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .topnav-search-zone {
+    flex: 0 0 210px !important;
+    min-width: 210px !important;
+    width: 210px !important;
+    max-width: 210px !important;
+  }
+
+  .topnav-search {
+    width: 210px !important;
+    min-width: 210px !important;
+    max-width: 210px !important;
+  }
+
+  .topnav-command-zone,
+  .topnav-utility-zone {
+    flex: 0 0 auto !important;
+  }
+}
